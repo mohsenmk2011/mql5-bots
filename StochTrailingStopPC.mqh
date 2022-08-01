@@ -48,7 +48,7 @@ StochTrailingStopPC::~StochTrailingStopPC()
 //+------------------------------------------------------------------+
 void StochTrailingStopPC::Run()
   {
-   string message="stock strategy \n";
+   string message="stock strategy with traling stop loss \n";
    double AskPrice= symbolInfo.AskTick();
    double BidPrice= symbolInfo.BidTick();
    ArraySetAsSeries(KArray,true);
