@@ -15,7 +15,7 @@
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-class StochWithTrailingStop : public Strategy
+class StochTrailingStopPC : public Strategy
   {
 private:
    SymbolInfo        symbolInfo;
@@ -27,14 +27,14 @@ private:
    bool              PassedMinimunDistance;
 
 public:
-                     StochWithTrailingStop();
-                    ~StochWithTrailingStop();
+                     StochTrailingStopPC();
+                    ~StochTrailingStopPC();
    void              Run();
   };
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-StochWithTrailingStop::StochWithTrailingStop()
+StochTrailingStopPC::StochTrailingStopPC()
   {
    KCrossedD=false;
    DCrossedK=false;
@@ -42,11 +42,11 @@ StochWithTrailingStop::StochWithTrailingStop()
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-StochWithTrailingStop::~StochWithTrailingStop()
+StochTrailingStopPC::~StochTrailingStopPC()
   {
   }
 //+------------------------------------------------------------------+
-void StochWithTrailingStop::Run()
+void StochTrailingStopPC::Run()
   {
    string message="stock strategy \n";
    double AskPrice= symbolInfo.AskTick();
