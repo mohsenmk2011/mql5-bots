@@ -49,8 +49,8 @@ StochTrailingStopPC::~StochTrailingStopPC()
 void StochTrailingStopPC::Run()
   {
    string message="stock strategy with traling stop loss \n";
-   double AskPrice= symbolInfo.AskTick();
-   double BidPrice= symbolInfo.BidTick();
+   double AskPrice= NormalizeDouble(symbolInfo.AskTick(),_Digits);
+   double BidPrice= NormalizeDouble(symbolInfo.BidTick(),_Digits);
    ArraySetAsSeries(KArray,true);
    ArraySetAsSeries(DArray,true);
    int StochHandle = iStochastic(Symbol(),PERIOD_H4,18,9,9,MODE_SMA,STO_LOWHIGH);
