@@ -7,80 +7,131 @@
 #property link      "https://www.mql5.com"
 #property version   "1.00"
 
-class JooyaRates{
-   private:
-   
-   public:
-      JooyaRates();
-     ~JooyaRates();
-     bool IsDownCandle(MqlRates &rate);
-     bool IsUpCandle(MqlRates &rate);
-     //===============================================================================
-     double BodyLength(MqlRates &rate);
-     double BottomShadow(MqlRates &rate);
-     double UpShadow(MqlRates &rate);
-     //===============================================================================
-     bool IsHammerCandle(MqlRates &rate);
- };
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-JooyaRates::JooyaRates(){
-}
+class JooyaRates
+  {
+private:
+   int               m_Score;
+public:
+                     JooyaRates();
+                    ~JooyaRates();
+   int               score();
+   bool              IsDownCandle(MqlRates &rate);
+   bool              IsUpCandle(MqlRates &rate);
+   //===============================================================================
+   double            BodyLength(MqlRates &rate);
+   double            BottomShadow(MqlRates &rate);
+   double            UpShadow(MqlRates &rate);
+   //===============================================================================
+   bool              IsHammerCandle(MqlRates &rate);
+  };
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-JooyaRates::~JooyaRates(){
-}
+JooyaRates::JooyaRates()
+  {
+   m_Score=0;
+  }
 //+------------------------------------------------------------------+
-bool JooyaRates::IsDownCandle(MqlRates &rate){
-   return rate.close<rate.open;
-}
-bool JooyaRates::IsUpCandle(MqlRates &rate){
-   return !IsDownCandle(rate);
-}
-double JooyaRates::BodyLength(MqlRates &rate){
-   double t=rate.close-rate.open;
-   if(t<0){
-      return -t;
-   }
-   return t;
-}
-double JooyaRates::BottomShadow(MqlRates &rate){
-   if(IsDownCandle(rate)){
-      return rate.close-rate.low;
-   }
-   else{
-      return rate.open-rate.low;
-   }
-}
-double JooyaRates::UpShadow(MqlRates &rate){
-   if(IsDownCandle(rate)){
-      return rate.close-rate.low;
-   }
-   else{
-      return rate.open-rate.low;
-   }
-}
+//|                                                                  |
+//+------------------------------------------------------------------+
+JooyaRates::~JooyaRates()
+  {
+  }
+//+------------------------------------------------------------------+
 
-bool JooyaRates::IsHammerCandle(MqlRates &rate){
-   if(!IsDownCandle(rate)){
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+int JooyaRates::score()
+  {
+   return m_Score;
+  }
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+bool JooyaRates::IsDownCandle(MqlRates &rate)
+  {
+   return rate.close<rate.open;
+  }
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+bool JooyaRates::IsUpCandle(MqlRates &rate)
+  {
+   return !IsDownCandle(rate);
+  }
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+double JooyaRates::BodyLength(MqlRates &rate)
+  {
+   double t=rate.close-rate.open;
+   if(t<0)
+     {
+      return -t;
+     }
+   return t;
+  }
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+double JooyaRates::BottomShadow(MqlRates &rate)
+  {
+   if(IsDownCandle(rate))
+     {
+      return rate.close-rate.low;
+     }
+   else
+     {
+      return rate.open-rate.low;
+     }
+  }
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+double JooyaRates::UpShadow(MqlRates &rate)
+  {
+   if(IsDownCandle(rate))
+     {
+      return rate.close-rate.low;
+     }
+   else
+     {
+      return rate.open-rate.low;
+     }
+  }
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+bool JooyaRates::IsHammerCandle(MqlRates &rate)
+  {
+   if(!IsDownCandle(rate))
+     {
       return false;
-   }
+     }
    double bl=BodyLength(rate);
    double bsh=BottomShadow(rate);
-   if(bsh<bl){
+   if(bsh<bl)
+     {
       return false;
-   }
-   if(!((bsh/bl)>2)){
+     }
+   if(!((bsh/bl)>2))
+     {
       return false;
-   }
+     }
    double tsh=UpShadow(rate);
-   if(tsh>bl){
+   if(tsh>bl)
+     {
       return false;
-   }
-   if((bl/tsh)>3){
-      return false;   
-   }
+     }
+   if((bl/tsh)>3)
+     {
+      return false;
+     }
    return true;
-}
+  }
+//+------------------------------------------------------------------+
