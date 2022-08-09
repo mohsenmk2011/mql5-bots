@@ -7,6 +7,7 @@
 #property link      "https://www.mql5.com"
 #property version   "1.00"
 #include <Jooya/Strategy.mqh>
+#include <Jooya/TrailingManager.mqh>
 #include <Trade/Trade.mqh>
 #include <Trade/DealInfo.mqh>
 #include <Jooya/PositionInfo.mqh>
@@ -18,13 +19,13 @@
 class StochTrailingStopPC : public Strategy
   {
 private:
-   SymbolInfo        symbolInfo;
    double            KArray[];
    double            DArray[];
    bool              KCrossedD;
    bool              DCrossedK;
    //Passed the Minimun Distance
    bool              PassedMinimunDistance;
+   TrailingManager   tm;
 
 public:
                      StochTrailingStopPC();
@@ -53,7 +54,7 @@ void StochTrailingStopPC::Run()
    double BidPrice= NormalizeDouble(symbolInfo.BidTick(),_Digits);
    ArraySetAsSeries(KArray,true);
    ArraySetAsSeries(DArray,true);
-   int StochHandle = iStochastic(Symbol(),PERIOD_H4,18,9,9,MODE_SMA,STO_LOWHIGH);
+   int StochHandle = iStochastic(Symbol(),PERIOD_M1,54,6,9,MODE_SMA,STO_LOWHIGH);
    CopyBuffer(StochHandle,0,1,2,KArray);
    CopyBuffer(StochHandle,1,1,2,DArray);
    message+="K= "+NormalizeDouble(KArray[0],2)+"\n";
@@ -71,7 +72,7 @@ void StochTrailingStopPC::Run()
            {
             trade.PositionClose(Symbol());
            }
-         trade.Buy(1.0,Symbol(),symbolInfo.Ask());
+         trade.Buy(0.01,Symbol(),symbolInfo.Ask());
          DCrossedK=false;
         }
      }
@@ -84,10 +85,11 @@ void StochTrailingStopPC::Run()
            {
             trade.PositionClose(Symbol());
            }
-         trade.Sell(1.0,Symbol(),symbolInfo.Ask());
+         trade.Sell(0.01,Symbol(),symbolInfo.Ask());
          KCrossedD=false;
         }
      }
-   Comment(message);
+   tm.trail();
+   
   }
 //+------------------------------------------------------------------+
