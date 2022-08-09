@@ -17,6 +17,8 @@ class PositionInfo:public CPositionInfo{
      int count();
      bool SelectLast();
      bool SelectFirst();
+     bool isBuy();
+     bool isSell();     
 };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -32,9 +34,27 @@ PositionInfo::~PositionInfo(){
 int PositionInfo::count(){
    return PositionsTotal();
 }
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
 bool PositionInfo::SelectLast(){
    return SelectByIndex(count()-1);
 }
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
 bool PositionInfo::SelectFirst(){
    return SelectByIndex(0);
+}
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+bool PositionInfo::isBuy(void){
+   return Type()==POSITION_TYPE_BUY;
+}
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+bool PositionInfo::isSell(void){
+   return Type()==POSITION_TYPE_SELL;
 }
