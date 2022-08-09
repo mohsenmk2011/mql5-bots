@@ -13,8 +13,6 @@
 #property version   "1.00"
 class MaStrategy:public Strategy{
    private:
-      CTrade trade;
-      CSymbolInfo symbolInfo;
       double FastMAArray[];
       int FastMAHandle;
       
