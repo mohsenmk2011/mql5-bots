@@ -57,9 +57,8 @@ void TrailingManager::trail()
 //SymbolInfoTick(Symbol(),last_tick);
 //Comment(last_tick.time,": Bid = ",last_tick.bid," Ask = ",last_tick.ask,"  Volume = ",last_tick.volume);
 //double desiredSL=NormalizeDouble(ask-150*Point(),Digits());
-   
-   for(int i=0; i<pi.count(); i++)
 
+   for(int i=0; i<pi.count(); i++)
      {
       pi.SelectByIndex(i);
       string symbol = pi.Symbol();
@@ -69,17 +68,21 @@ void TrailingManager::trail()
       int type =pi.Type();
       if(pi.isBuy())
         {
-         double ask = NormalizeDouble(SymbolInfoDouble(Symbol(),SYMBOL_ASK),Digits());
          double lastRateLow=Prices[1].low;
-         if(currentPrice>currentSL+10*Digits())
-           {
-            trade.PositionModify(ticket,lastRateLow,0);
-           }
+         trade.PositionModify(ticket,lastRateLow,0);
+
+         //double ask = NormalizeDouble(SymbolInfoDouble(Symbol(),SYMBOL_ASK),Digits());
+         //if(currentPrice>currentSL+10*Digits())
+         //{
+         //}
 
         }
       else
-        {
-        }
+         if(pi.isSell())
+           {
+            double lastRateHigh=Prices[1].high;
+            trade.PositionModify(ticket,lastRateHigh,0);
+           }
      }
   }
 //+------------------------------------------------------------------+

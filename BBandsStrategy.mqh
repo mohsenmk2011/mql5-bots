@@ -4,12 +4,14 @@
 //|                                             https://www.mql5.com |
 //+------------------------------------------------------------------+
 #include <Jooya/Strategy.mqh>
+#include <Jooya/TrailingManager.mqh>
 #include <Trade/SymbolInfo.mqh>
 #include <Trade/DealInfo.mqh>
 
 #property copyright "Copyright 2022, MetaQuotes Ltd."
 #property link      "https://www.mql5.com"
 #property version   "1.00"
+
 class BBandsStrategy : public Strategy
   {
 private:
@@ -18,6 +20,8 @@ private:
 
    bool              canSell;
    bool              canBuy;
+   
+   TrailingManager tm;
 
 public:
                      BBandsStrategy();
@@ -112,6 +116,7 @@ void BBandsStrategy::Run()
      {
       sellLock=false;
      }
+     tm.trail();
   }
 
 //+------------------------------------------------------------------+
