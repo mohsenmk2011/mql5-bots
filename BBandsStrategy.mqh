@@ -12,6 +12,9 @@
 #property link      "https://www.mql5.com"
 #property version   "1.00"
 
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
 class BBandsStrategy : public Strategy
   {
 private:
@@ -20,8 +23,11 @@ private:
 
    bool              canSell;
    bool              canBuy;
-   
-   TrailingManager tm;
+
+   bool              trailBuy;
+   bool              trailSell;
+
+   TrailingManager   tm;
 
 public:
                      BBandsStrategy();
@@ -63,7 +69,7 @@ void BBandsStrategy::Run()
    ArraySetAsSeries(upperBandArray,true);
    ArraySetAsSeries(lowerBandArray,true);
 
-   int bbHandl=iBands(Symbol(),Period(),20,0,2.0,PRICE_CLOSE);
+   int bbHandl=iBands(Symbol(),Period(),20,0,2.5,PRICE_CLOSE);
 
    CopyBuffer(bbHandl,0,0,3,midBandArray);
    CopyBuffer(bbHandl,1,0,3,upperBandArray);
@@ -86,7 +92,7 @@ void BBandsStrategy::Run()
         }
       if(positionInfo.count()>0)
         {
-        trade.PositionCloseAll(POSITION_TYPE_SELL);
+         trade.PositionCloseAll(POSITION_TYPE_SELL);
         }
       trade.Buy(1.0,Symbol(),symbolInfo.Ask());
       buyLock=true;
@@ -106,7 +112,7 @@ void BBandsStrategy::Run()
         }
       if(positionInfo.count()>0)
         {
-        trade.PositionCloseAll(POSITION_TYPE_BUY);
+         trade.PositionCloseAll(POSITION_TYPE_BUY);
         }
       trade.Sell(1.0,Symbol(),symbolInfo.Ask());
       buyLock=false;
@@ -116,7 +122,42 @@ void BBandsStrategy::Run()
      {
       sellLock=false;
      }
-     tm.trail();
+   if(trailBuy)
+     {
+      if(positionInfo.buyCount()==0)
+        {
+         trailBuy=false;
+        }
+     }
+   if(trailSell)
+     {
+      if(positionInfo.sellCount()==0)
+        {
+         trailSell=false;
+        }
+     }
+   if(positionInfo.count()>0)
+     {
+      if(trailBuy)
+        {
+         tm.trail(POSITION_TYPE_BUY);
+        }
+      else
+        {
+         trailBuy=Prices[1].low<=upperBandArray[1]&&Prices[1].high>=upperBandArray[1];
+        }
+
+      if(trailSell)
+        {
+         tm.trail(POSITION_TYPE_SELL);
+        }
+      else
+        {
+         trailSell=Prices[1].low<=lowerBandArray[1]&&Prices[1].high>=lowerBandArray[1];
+
+        }
+
+     }
   }
 
 //+------------------------------------------------------------------+
