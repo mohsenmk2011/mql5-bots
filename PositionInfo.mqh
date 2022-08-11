@@ -8,53 +8,94 @@
 #property version   "1.00"
 #include <Trade/PositionInfo.mqh>
 
-class PositionInfo:public CPositionInfo{
-   private:
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+class PositionInfo:public CPositionInfo
+  {
+private:
 
-   public:
-      PositionInfo();
-     ~PositionInfo();
-     int count();
-     bool SelectLast();
-     bool SelectFirst();
-     bool isBuy();
-     bool isSell();     
-};
+public:
+                     PositionInfo();
+                    ~PositionInfo();
+   int               count();
+   int               sellCount();
+   int               buyCount();
+   bool              SelectLast();
+   bool              SelectFirst();
+   bool              isBuy();
+   bool              isSell();
+  };
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-PositionInfo::PositionInfo(){
-}
+PositionInfo::PositionInfo()
+  {
+  }
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-PositionInfo::~PositionInfo(){
-}
+PositionInfo::~PositionInfo()
+  {
+  }
 //+------------------------------------------------------------------+
-int PositionInfo::count(){
+//|                                                                  |
+//+------------------------------------------------------------------+
+int PositionInfo::count()
+  {
    return PositionsTotal();
-}
+  }
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-bool PositionInfo::SelectLast(){
-   return SelectByIndex(count()-1);
-}
+int PositionInfo::sellCount()
+  {
+   int c=0;
+   for(int i=0; i<PositionsTotal(); i++)
+     {
+      SelectByIndex(i);
+      if(isSell())
+        {
+         c++;
+        }
+     }
+   return c;
+  }
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-bool PositionInfo::SelectFirst(){
+int PositionInfo::buyCount()
+  {
+   int c=0;
+   for(int i=0; i<PositionsTotal(); i++)
+     {
+      SelectByIndex(i);
+      if(isBuy())
+        {
+         c++;
+        }
+     }
+   return c;
+  }
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+bool PositionInfo::SelectFirst()
+  {
    return SelectByIndex(0);
-}
+  }
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-bool PositionInfo::isBuy(void){
-   return Type()==POSITION_TYPE_BUY;
-}
+bool PositionInfo::isBuy(void)
+  {
+   return PositionType()==POSITION_TYPE_BUY;
+  }
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-bool PositionInfo::isSell(void){
-   return Type()==POSITION_TYPE_SELL;
-}
+bool PositionInfo::isSell(void)
+  {
+   return PositionType()==POSITION_TYPE_SELL;
+  }
+//+------------------------------------------------------------------+
