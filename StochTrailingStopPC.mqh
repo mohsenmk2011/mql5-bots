@@ -49,19 +49,11 @@ StochTrailingStopPC::~StochTrailingStopPC()
 //+------------------------------------------------------------------+
 void StochTrailingStopPC::Run()
   {
-   string message="stock strategy with traling stop loss \n";
-   double AskPrice= NormalizeDouble(symbolInfo.AskTick(),_Digits);
-   double BidPrice= NormalizeDouble(symbolInfo.BidTick(),_Digits);
    ArraySetAsSeries(KArray,true);
    ArraySetAsSeries(DArray,true);
    int StochHandle = iStochastic(Symbol(),PERIOD_M1,54,6,9,MODE_SMA,STO_LOWHIGH);
    CopyBuffer(StochHandle,0,1,2,KArray);
    CopyBuffer(StochHandle,1,1,2,DArray);
-   message+="K= "+NormalizeDouble(KArray[0],2)+"\n";
-   message+="D= "+NormalizeDouble(DArray[0],2)+"\n";
-
-   double DistanceKD=NormalizeDouble(Distance(KArray[0],DArray[0]),Digits());
-   message+="Distance= "+DoubleToString(DistanceKD,2)+"\n";
 
    if(!KCrossedD)
      {
@@ -89,7 +81,7 @@ void StochTrailingStopPC::Run()
          KCrossedD=false;
         }
      }
-   tm.trail();
+   //tm.trail();
    
   }
 //+------------------------------------------------------------------+
