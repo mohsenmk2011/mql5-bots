@@ -21,7 +21,7 @@ private:
 public:
                      TrailingManager();
                     ~TrailingManager();
-   void              trail();
+   void              trail(ENUM_POSITION_TYPE type);
   };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -36,7 +36,7 @@ TrailingManager::~TrailingManager()
   {
   }
 //+------------------------------------------------------------------+
-void TrailingManager::trail()
+void TrailingManager::trail(ENUM_POSITION_TYPE type)
   {
    MqlRates Prices[];
    datetime dt;
@@ -65,8 +65,7 @@ void TrailingManager::trail()
       ulong ticket = pi.Ticket();
       double currentSL=pi.StopLoss();
       double currentPrice=pi.PriceCurrent();
-      int type =pi.Type();
-      if(pi.isBuy())
+      if(type==POSITION_TYPE_BUY&& pi.isBuy())
         {
          double lastRateLow=Prices[1].low;
          trade.PositionModify(ticket,lastRateLow,0);
@@ -78,7 +77,7 @@ void TrailingManager::trail()
 
         }
       else
-         if(pi.isSell())
+         if(type==POSITION_TYPE_SELL&&pi.isSell())
            {
             double lastRateHigh=Prices[1].high;
             trade.PositionModify(ticket,lastRateHigh,0);
