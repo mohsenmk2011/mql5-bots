@@ -75,7 +75,7 @@ void BBandsStrategy::Run()
    ArraySetAsSeries(upperBandArray,true);
    ArraySetAsSeries(lowerBandArray,true);
 
-   int bbHandl=iBands(Symbol(),Period(),18,0,2.7,PRICE_CLOSE);
+   int bbHandl=iBands(Symbol(),Period(),20,0,2.5,PRICE_CLOSE);
 
    CopyBuffer(bbHandl,0,0,3,midBandArray);
    CopyBuffer(bbHandl,1,0,3,upperBandArray);
