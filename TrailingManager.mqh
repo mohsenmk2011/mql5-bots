@@ -7,6 +7,7 @@
 #property link      "https://www.mql5.com"
 #property version   "1.00"
 #include <Trade/Trade.mqh>
+#include <Jooya/SymbolInfo.mqh>
 #include <Jooya/PositionInfo.mqh>
 
 //+------------------------------------------------------------------+
@@ -17,11 +18,13 @@ class TrailingManager
 private:
    CTrade            trade;
    PositionInfo      pi;
+   SymbolInfo        si;
 
 public:
                      TrailingManager();
                     ~TrailingManager();
    void              trail(ENUM_POSITION_TYPE type);
+   void              trailWithAtr();
   };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -35,6 +38,60 @@ TrailingManager::TrailingManager()
 TrailingManager::~TrailingManager()
   {
   }
+//+------------------------------------------------------------------+
+void TrailingManager::trailWithAtr()
+  {
+   string comment="";
+
+   int atrHandle=iATR(Symbol(),Period(),14);
+   double atrArray[];
+   ArraySetAsSeries(atrArray,true);
+   CopyBuffer(atrHandle,0,0,3,atrArray);
+   double atrValue=NormalizeDouble(atrArray[0],5);
+
+   double stoplossPoint=atrValue*100000;
+   double newSL=0;
+
+   comment+="Atr => "+atrValue+"\n";
+   comment+="si.Bid()       => "+si.BidTick()+"\n";
+   comment+="StopLoss(pips) => "+stoplossPoint+"\n";
+   comment+="position count => "+pi.count()+"\n";
+         comment+="new StopLoss   => "+newSL+"\n";
+//---
+
+   for(int i=pi.count()-1; i>=0; i--)
+     {
+      pi.SelectByIndex(i);
+      string symbol = pi.Symbol();
+      ulong ticket = pi.Ticket();
+      double currentSL=pi.StopLoss();
+      double currentPrice=pi.PriceCurrent();
+      
+       if(pi.isBuy())
+        {
+         newSL=si.AskTick()-stoplossPoint*Point();
+        }
+
+      if(pi.isSell()&&(newSL<currentSL||currentSL==0))
+        {
+         newSL=si.BidTick()+stoplossPoint*Point();
+        }
+        
+      if(pi.isBuy()&&(newSL>currentSL||currentSL==0))
+        {
+         trade.PositionModify(ticket,newSL,0);
+        }
+
+      if(pi.isSell()&&(newSL<currentSL||currentSL==0))
+        {
+         trade.PositionModify(ticket,newSL,0);
+        }
+     }
+
+   Comment(comment);
+  }
+//+------------------------------------------------------------------+
+//|                                                                  |
 //+------------------------------------------------------------------+
 void TrailingManager::trail(ENUM_POSITION_TYPE type)
   {
@@ -58,13 +115,18 @@ void TrailingManager::trail(ENUM_POSITION_TYPE type)
 //Comment(last_tick.time,": Bid = ",last_tick.bid," Ask = ",last_tick.ask,"  Volume = ",last_tick.volume);
 //double desiredSL=NormalizeDouble(ask-150*Point(),Digits());
 
-   for(int i=0; i<pi.count(); i++)
+   for(int i=pi.count()-1; i>=0; i--)
      {
       pi.SelectByIndex(i);
       string symbol = pi.Symbol();
       ulong ticket = pi.Ticket();
       double currentSL=pi.StopLoss();
       double currentPrice=pi.PriceCurrent();
+      if(pi.Profit()<=0)
+        {
+         return;
+        }
+
       if(type==POSITION_TYPE_BUY&& pi.isBuy())
         {
          double lastRateLow=Prices[1].low;
@@ -74,7 +136,6 @@ void TrailingManager::trail(ENUM_POSITION_TYPE type)
          //if(currentPrice>currentSL+10*Digits())
          //{
          //}
-
         }
       else
          if(type==POSITION_TYPE_SELL&&pi.isSell())
