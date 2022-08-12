@@ -80,19 +80,36 @@ void BBandsStrategy::Run()
    CopyBuffer(bbHandl,0,0,3,midBandArray);
    CopyBuffer(bbHandl,1,0,3,upperBandArray);
    CopyBuffer(bbHandl,2,0,3,lowerBandArray);
-
-   bbCanBuy=Prices[2].close<=lowerBandArray[2]&&Prices[1].close>=lowerBandArray[1];
-   bbCanSell=Prices[2].close>=upperBandArray[2]&&Prices[1].close<=upperBandArray[1];
-
-   stochCanBuy=CrossOver(KArray,DArray);
-   stochCanSell=CrossOver(DArray,KArray);
+//------- one canle close under and next close up of lower bnand
+//bbCanBuy=Prices[2].close<=lowerBandArray[2]&&Prices[1].close>=lowerBandArray[1];
+//bbCanSell=Prices[2].close>=upperBandArray[2]&&Prices[1].close<=upperBandArray[1];
+   if(!bbCanBuy)
+     {
+      bbCanBuy=Prices[0].low<=lowerBandArray[0]&&Prices[0].high>=lowerBandArray[0];
+      bbCanSell=false;
+     }
+   if(!bbCanSell)
+     {
+      bbCanSell=Prices[0].low<=lowerBandArray[0]&&Prices[0].high>=lowerBandArray[0];
+      bbCanBuy=false;
+     }
+   if(!stochCanBuy)
+     {
+      stochCanBuy=CrossOver(KArray,DArray);
+      stochCanSell=false;
+     }
+   if(!stochCanSell)
+     {
+      stochCanSell=CrossOver(DArray,KArray);
+      stochCanBuy=false;
+     }
 
    if((bbCanBuy&&bbCanSell)||(stochCanBuy&&stochCanSell))
      {
       return;
      }
 
-   if(bbCanBuy)
+   if(bbCanBuy&&stochCanBuy)
      {
       if(buyLock)
         {
@@ -102,46 +119,25 @@ void BBandsStrategy::Run()
       buyLock=true;
       sellLock=false;
 
-      if(stochCanBuy)
+      if(positionInfo.count()>0)
         {
-
-         if(positionInfo.count()>0)
-           {
-            trade.PositionCloseAll(POSITION_TYPE_SELL);
-           }
-         stochCanSell=false;
+         trade.PositionCloseAll(POSITION_TYPE_SELL);
         }
       return;
      }
-   else
+   if(bbCanSell&&stochCanSell)
      {
-      buyLock=false;
-     }
-   if(bbCanSell)
-     {
-      signal="sell";
       if(sellLock)
         {
          return;
         }
-      if(!stochCanSell)
-        {
-         if(stochCanSell)
-           {
-            if(positionInfo.count()>0)
-              {
-               trade.PositionCloseAll(POSITION_TYPE_BUY);
-              }
-            trade.Sell(1.0,Symbol(),symbolInfo.Ask());
-            stochCanBuy=false;
-           }
-        }
+      trade.Sell(1.0,Symbol(),symbolInfo.Bid());
       buyLock=false;
       sellLock=true;
-     }
-   else
-     {
-      sellLock=false;
+      if(positionInfo.count()>0)
+        {
+         trade.PositionCloseAll(POSITION_TYPE_BUY);
+        }
      }
   }
 
