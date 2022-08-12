@@ -7,6 +7,7 @@
 #property link      "https://www.mql5.com"
 #property version   "1.00"
 #include <Jooya/Strategy.mqh>
+#include <Jooya/TrailingManager.mqh>
 #include <Trade/Trade.mqh>
 #include <Trade/DealInfo.mqh>
 #include <Jooya/PositionInfo.mqh>
@@ -25,7 +26,8 @@ private:
    bool              DCrossedK;
    //Passed the Minimun Distance
    bool              PassedMinimunDistance;
-
+   TrailingManager   tm;
+   double            previosAtrValue;
 public:
                      StochWithTrailingStop();
                     ~StochWithTrailingStop();
@@ -55,7 +57,8 @@ void StochWithTrailingStop::Run()
    ArraySetAsSeries(DArray,true);
 //int StochHandle = iStochastic(Symbol(),PERIOD_M1,24,4,3,MODE_EMA,STO_LOWHIGH);
 
-   int StochHandle = iStochastic(Symbol(),PERIOD_H4,18,9,9,MODE_SMA,STO_LOWHIGH);
+   int StochHandle = iStochastic(Symbol(),Period(),18,9,9,MODE_SMA,STO_LOWHIGH);
+
    CopyBuffer(StochHandle,0,1,2,KArray);
    CopyBuffer(StochHandle,1,1,2,DArray);
    message+="K= "+NormalizeDouble(KArray[0],2)+"\n";
@@ -77,6 +80,9 @@ void StochWithTrailingStop::Run()
          trade.Buy(1.0,Symbol(),symbolInfo.Ask());
          DCrossedK=false;
         }
+      else
+        {
+        }
      }
    if(!DCrossedK)
      {
@@ -90,8 +96,12 @@ void StochWithTrailingStop::Run()
          trade.Sell(1.0,Symbol(),symbolInfo.Ask());
          KCrossedD=false;
         }
+      else
+        {
+        }
      }
-   Comment(message);
+   tm.trailWithAtr();
+   //Comment(message);
 
   }
 //+------------------------------------------------------------------+

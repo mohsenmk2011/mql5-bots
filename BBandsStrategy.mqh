@@ -140,7 +140,8 @@ void BBandsStrategy::Run()
      {
       if(trailBuy)
         {
-         tm.trail(POSITION_TYPE_BUY);
+         //tm.trail(POSITION_TYPE_BUY);
+         tm.trailWithAtr();
         }
       else
         {
@@ -149,7 +150,8 @@ void BBandsStrategy::Run()
 
       if(trailSell)
         {
-         tm.trail(POSITION_TYPE_SELL);
+         //tm.trail(POSITION_TYPE_SELL);
+         tm.trailWithAtr();
         }
       else
         {

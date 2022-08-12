@@ -58,30 +58,33 @@ void StochTrailingStopPC::Run()
    if(!KCrossedD)
      {
       KCrossedD=CrossOver(KArray,DArray);
-      if(KCrossedD)
-        {
-         if(positionInfo.count()>0)
-           {
-            trade.PositionClose(Symbol());
-           }
-         trade.Buy(0.01,Symbol(),symbolInfo.Ask());
-         DCrossedK=false;
-        }
      }
    if(!DCrossedK)
      {
       DCrossedK=CrossOver(DArray,KArray);
-      if(DCrossedK)
-        {
-         if(positionInfo.count()>0)
-           {
-            trade.PositionClose(Symbol());
-           }
-         trade.Sell(0.01,Symbol(),symbolInfo.Ask());
-         KCrossedD=false;
-        }
      }
-   //tm.trail();
-   
+
+   if(KCrossedD)
+     {
+      if(positionInfo.count()>0)
+        {
+         trade.PositionClose(Symbol());
+        }
+      trade.Buy(0.01,Symbol(),symbolInfo.Ask());
+      DCrossedK=false;
+     }
+
+
+   if(DCrossedK)
+     {
+      if(positionInfo.count()>0)
+        {
+         trade.PositionClose(Symbol());
+        }
+      trade.Sell(0.01,Symbol(),symbolInfo.Ask());
+      KCrossedD=false;
+     }
+//tm.trail();
+
   }
 //+------------------------------------------------------------------+
