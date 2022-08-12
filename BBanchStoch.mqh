@@ -1,5 +1,5 @@
 //+------------------------------------------------------------------+
-//|                                               BBandsStrategy.mqh |
+//|                                               BBStochStrategy.mqh |
 //|                                  Copyright 2022, MetaQuotes Ltd. |
 //|                                             https://www.mql5.com |
 //+------------------------------------------------------------------+
@@ -10,7 +10,7 @@
 #property copyright "Copyright 2022, MetaQuotes Ltd."
 #property link      "https://www.mql5.com"
 #property version   "1.00"
-class BBandsStrategy : public Strategy
+class BBStochStrategy : public Strategy
   {
 private:
    //==============[ bb propeties ]===============
@@ -26,14 +26,14 @@ private:
    bool              stochCanSell;
 
 public:
-                     BBandsStrategy();
-                    ~BBandsStrategy();
+                     BBStochStrategy();
+                    ~BBStochStrategy();
    void              Run();
   };
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-BBandsStrategy::BBandsStrategy()
+BBStochStrategy::BBStochStrategy()
   {
    buyLock=false;
    sellLock=false;
@@ -47,13 +47,13 @@ BBandsStrategy::BBandsStrategy()
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-BBandsStrategy::~BBandsStrategy()
+BBStochStrategy::~BBStochStrategy()
   {
   }
 //+------------------------------------------------------------------+
 //|                          Run                                     |
 //+------------------------------------------------------------------+
-void BBandsStrategy::Run()
+void BBStochStrategy::Run()
   {
    ArraySetAsSeries(KArray,true);
    ArraySetAsSeries(DArray,true);
