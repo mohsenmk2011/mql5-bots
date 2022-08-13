@@ -87,22 +87,34 @@ void BBStochStrategy::Run()
    if(!bbCanBuy)
      {
       bbCanBuy=Prices[0].low<=lowerBandArray[0]&&Prices[0].high>=lowerBandArray[0];
-      bbCanSell=false;
+      if(bbCanBuy)
+        {
+         bbCanSell=false;
+        }
      }
    if(!bbCanSell)
      {
       bbCanSell=Prices[0].low<=upperBandArray[0]&&Prices[0].high>=upperBandArray[0];
-      bbCanBuy=false;
+      if(bbCanSell)
+        {
+         bbCanBuy=false;
+        }
      }
    if(!stochCanBuy)
      {
       stochCanBuy=CrossOver(KArray,DArray);
-      stochCanSell=false;
+      if(stochCanBuy)
+        {
+         stochCanSell=false;
+        }
      }
    if(!stochCanSell)
      {
       stochCanSell=CrossOver(DArray,KArray);
-      stochCanBuy=false;
+      if(stochCanSell)
+        {
+         stochCanBuy=false;
+        }
      }
 
    if((bbCanBuy&&bbCanSell)||(stochCanBuy&&stochCanSell))
