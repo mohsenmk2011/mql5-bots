@@ -4,6 +4,7 @@
 //|                                             https://www.mql5.com |
 //+------------------------------------------------------------------+
 #include <Jooya/Strategy.mqh>
+#include <Jooya/MaManager.mqh>
 #include <Trade/Trade.mqh>
 #include <Trade/SymbolInfo.mqh>
 #include <Trade/DealInfo.mqh>
@@ -28,6 +29,8 @@ private:
    double            CurrentDistance_H4_D1;
    double            MaH4Array[];
    int               MaH4Handle;
+
+   MaManager         mam;
 
    double            MaD1Array[];
    int               MaD1Handle;
@@ -75,7 +78,7 @@ void MaStrategy3::Run()
   {
    Print("Strategy 03 is startd");
    string commment="";
-   CopyBuffer(MaH4Handle,0,1,2,MaH4Array);
+   CopyBuffer(MaH4Handle,0,1,10,MaH4Array);
    ArraySetAsSeries(MaH4Array,true);
    CopyBuffer(MaD1Handle,0,1,2,MaD1Array);
    ArraySetAsSeries(MaD1Array,true);
@@ -83,6 +86,15 @@ void MaStrategy3::Run()
    double CurrentDistance_H4_D1=NormalizeDouble(Distance(MaH4Array[0],MaD1Array[0]),Digits());
 
    commment+="Current Distance H4 & D1: "+DoubleToString(CurrentDistance_H4_D1,Digits())+"\n";
+
+   MqlRates Prices[];
+   ArraySetAsSeries(Prices,true);
+   int count = CopyRates(Symbol(),Period(),0,10,Prices);
+
+   double angle=mam.angle(Prices,MaH4Array);
+
+   commment+="angle => "+angle+"\n";
+
    D1IsAboveH4=BiggerThan(MaD1Array,MaH4Array);
 
    bool D1IsGoingUp=true;
@@ -161,3 +173,4 @@ void MaStrategy3::Run()
    Comment(commment);
 //========================================================================
   }
+//+------------------------------------------------------------------+
