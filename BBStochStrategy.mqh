@@ -6,6 +6,7 @@
 #include <Jooya/Strategy.mqh>
 #include <Trade/SymbolInfo.mqh>
 #include <Trade/DealInfo.mqh>
+#include <Jooya/TrailingManager.mqh>
 
 #property copyright "Copyright 2022, MetaQuotes Ltd."
 #property link      "https://www.mql5.com"
@@ -13,17 +14,21 @@
 class BBStochStrategy : public Strategy
   {
 private:
-   //==============[ bb propeties ]===============
+   //==============[ bb properties ]===============
    bool              buyLock;
    bool              sellLock;
 
    bool              bbCanSell;
    bool              bbCanBuy;
-   //==============[ stoch propeties ]===============
+   //==============[ stoch properties ]===============
    double            KArray[];
    double            DArray[];
    bool              stochCanBuy;
    bool              stochCanSell;
+   //==============[ trailing properties ]===============
+   TrailingManager   tm;
+   bool              trailBuy;
+   bool              trailSell;
 
 public:
                      BBStochStrategy();
@@ -43,6 +48,9 @@ BBStochStrategy::BBStochStrategy()
 
    stochCanBuy=false;
    stochCanSell=false;
+
+   trailBuy=false;
+   trailSell=false;
   }
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -82,11 +90,10 @@ void BBStochStrategy::Run()
    CopyBuffer(bbHandl,1,0,3,upperBandArray);
    CopyBuffer(bbHandl,2,0,3,lowerBandArray);
 //------- one canle close under and next close up of lower bnand
-//bbCanBuy=Prices[2].close<=lowerBandArray[2]&&Prices[1].close>=lowerBandArray[1];
-//bbCanSell=Prices[2].close>=upperBandArray[2]&&Prices[1].close<=upperBandArray[1];
    if(!bbCanBuy)
      {
-      bbCanBuy=Prices[0].low<=lowerBandArray[0]&&Prices[0].high>=lowerBandArray[0];
+      //bbCanBuy=Prices[0].low<=lowerBandArray[0]&&Prices[0].high>=lowerBandArray[0];
+      bbCanBuy=Prices[2].close<=lowerBandArray[2]&&Prices[1].close>=lowerBandArray[1];
       if(bbCanBuy)
         {
          bbCanSell=false;
@@ -94,7 +101,8 @@ void BBStochStrategy::Run()
      }
    if(!bbCanSell)
      {
-      bbCanSell=Prices[0].low<=upperBandArray[0]&&Prices[0].high>=upperBandArray[0];
+      //bbCanSell=Prices[0].low<=upperBandArray[0]&&Prices[0].high>=upperBandArray[0];
+      bbCanSell=Prices[2].close>=upperBandArray[2]&&Prices[1].close<=upperBandArray[1];
       if(bbCanSell)
         {
          bbCanBuy=false;
