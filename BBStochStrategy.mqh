@@ -55,6 +55,7 @@ BBStochStrategy::~BBStochStrategy()
 //+------------------------------------------------------------------+
 void BBStochStrategy::Run()
   {
+   string comment ="";
    ArraySetAsSeries(KArray,true);
    ArraySetAsSeries(DArray,true);
    int StochHandle = iStochastic(Symbol(),Period(),18,9,9,MODE_SMA,STO_LOWHIGH);
@@ -90,7 +91,7 @@ void BBStochStrategy::Run()
      }
    if(!bbCanSell)
      {
-      bbCanSell=Prices[0].low<=lowerBandArray[0]&&Prices[0].high>=lowerBandArray[0];
+      bbCanSell=Prices[0].low<=upperBandArray[0]&&Prices[0].high>=upperBandArray[0];
       bbCanBuy=false;
      }
    if(!stochCanBuy)
@@ -139,6 +140,11 @@ void BBStochStrategy::Run()
          trade.PositionCloseAll(POSITION_TYPE_BUY);
         }
      }
+   comment+="bbCanBuy     => "+bbCanBuy+"\n";
+   comment+="bbCanSell    => "+bbCanSell+"\n";
+   comment+="stochCanBuy  => "+stochCanBuy+"\n";
+   comment+="stochCanSell => "+stochCanSell+"\n";
+   Comment(comment);
   }
 
 //+------------------------------------------------------------------+
