@@ -1,8 +1,11 @@
-//+------------------------------------------------------------------+
-//|                                               BBStochStrategy.mqh |
-//|                                  Copyright 2022, MetaQuotes Ltd. |
-//|                                             https://www.mql5.com |
-//+------------------------------------------------------------------+
+//+-----------------------------------------------------------------------------------------------+
+//|                                             BBStochStrategy.mqh                               |
+//|                                this bot work with BBand and stoch strategy                    |
+//|                                when bband has buy signal and then stoch has buy it will buy   |
+//|                               when bband has sell signal and then stoch has sell it will sell |
+//|                               this bot just show ma(45) slop and comments it                  |
+//|                               this bot will not trail stoploss                                |
+//+-----------------------------------------------------------------------------------------------+
 #include <Jooya/Strategy.mqh>
 #include <Trade/SymbolInfo.mqh>
 #include <Trade/DealInfo.mqh>
