@@ -6,11 +6,13 @@
 #include <Jooya/Strategy.mqh>
 #include <Trade/SymbolInfo.mqh>
 #include <Trade/DealInfo.mqh>
+#include <Jooya/MaManager.mqh>
 #include <Jooya/TrailingManager.mqh>
 
 #property copyright "Copyright 2022, MetaQuotes Ltd."
 #property link      "https://www.mql5.com"
 #property version   "1.00"
+
 class BBStochStrategy : public Strategy
   {
 private:
@@ -25,6 +27,9 @@ private:
    double            DArray[];
    bool              stochCanBuy;
    bool              stochCanSell;
+   //==============[ ma properties ]===============
+   MaManager         mam;
+   
    //==============[ trailing properties ]===============
    TrailingManager   tm;
    bool              trailBuy;
@@ -64,17 +69,27 @@ BBStochStrategy::~BBStochStrategy()
 void BBStochStrategy::Run()
   {
    string comment ="";
+   
+   MqlRates Prices[];
+   datetime dt;
+   ArraySetAsSeries(Prices,true);
+//int count=CopyRates(Symbol(),Period(),0,Bars(Symbol(),Period()),Prices);
+   int count = CopyRates(Symbol(),Period(),0,10,Prices);
+   
+   double maArray[];
+   int maHandle= iMA(Symbol(),Period(),45,0,MODE_SMA,PRICE_CLOSE);
+   CopyBuffer(maHandle,0,1,10,maArray);
+   ArraySetAsSeries(maArray,true);
+   double angle=mam.angle(Prices,maArray);
+   comment+="angle => "+angle+"\n";
+   
+   
    ArraySetAsSeries(KArray,true);
    ArraySetAsSeries(DArray,true);
    int StochHandle = iStochastic(Symbol(),Period(),18,9,9,MODE_SMA,STO_LOWHIGH);
    CopyBuffer(StochHandle,0,1,2,KArray);
    CopyBuffer(StochHandle,1,1,2,DArray);
 
-   MqlRates Prices[];
-   datetime dt;
-   ArraySetAsSeries(Prices,true);
-//int count=CopyRates(Symbol(),Period(),0,Bars(Symbol(),Period()),Prices);
-   int count = CopyRates(Symbol(),Period(),0,3,Prices);
    string signal="";
    double midBandArray[];
    double upperBandArray[];
