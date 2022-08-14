@@ -4,6 +4,7 @@
 //|                                             https://www.mql5.com |
 //+------------------------------------------------------------------+
 #include <Jooya/Strategy.mqh>
+#include <Jooya/TrailingManager.mqh>
 #include <Jooya/MaManager.mqh>
 #include <Trade/Trade.mqh>
 #include <Trade/SymbolInfo.mqh>
@@ -31,6 +32,7 @@ private:
    int               MaH4Handle;
 
    MaManager         mam;
+   TrailingManager   tm;
 
    double            MaD1Array[];
    int               MaD1Handle;
@@ -101,17 +103,17 @@ void MaStrategy3::Run()
 //Comment("ma5[",MaM15Array[0],",",MaM15Array[1],"]\n","ma10[",MaH4Array[0],",",MaH4Array[1],"]\n","ma200[",MaD1Array[0],",",MaD1Array[1],"]");
 //========================================================================
 
-   commment+="H4 Is Above \n";
    commment+="BuyPrice= "+DoubleToString(symbolInfo.Ask(),Digits());
    if(H4CrossedD1)
      {
-      commment+="H4 Cross Over D1("+DoubleToString(DistanceAtCross_H4_D1,Digits())+")\n";
+      commment+="H4 Crossed D1("+DoubleToString(DistanceAtCross_H4_D1,Digits())+")\n";
       positionInfo.SelectLast();
       commment+="LastTicket="+IntegerToString(positionInfo.Ticket())+")\n";
      }
    else
      {
-      commment+="H4 Not Crossed D1\n";
+      commment+="D1 Is Above=> trail sell \n";
+      tm.trailWithAtr();
       H4CrossedD1=CrossOver(MaH4Array,MaD1Array);
       if(H4CrossedD1)
         {
@@ -139,13 +141,13 @@ void MaStrategy3::Run()
    commment+="D1 Is Above \n";
    if(D1CrossedH4)
      {
-      commment+="D1 Cross Over H4("+DoubleToString(DistanceAtCross_H4_D1,Digits())+")\n";
+      commment+="D1 Crossed H4("+DoubleToString(DistanceAtCross_H4_D1,Digits())+")\n";
       positionInfo.SelectLast();
-      commment+="LastTicket="+IntegerToString(positionInfo.Ticket())+")\n";
      }
    else
      {
-      commment+="D1 Not Crossed H4\n";
+      commment+="H4 is above => trail buy \n";
+      tm.trailWithAtr();
       D1CrossedH4=CrossOver(MaD1Array,MaH4Array);
       if(D1CrossedH4)
         {
