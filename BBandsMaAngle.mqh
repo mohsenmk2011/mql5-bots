@@ -4,6 +4,7 @@
 //|                                             https://www.mql5.com |
 //+------------------------------------------------------------------+/
 #include <Jooya/Strategy.mqh>
+#include <Jooya/MaManager.mqh>
 #include <Jooya/TrailingManager.mqh>
 #include <Trade/SymbolInfo.mqh>
 #include <Trade/DealInfo.mqh>
@@ -28,7 +29,7 @@ private:
    bool              trailSell;
 
    TrailingManager   tm;
-
+   MaManager         mam;
 public:
                      BBandsMaAngle();
                     ~BBandsMaAngle();
@@ -43,6 +44,8 @@ BBandsMaAngle::BBandsMaAngle()
    sellLock=false;
    canBuy=false;
    canSell=false;
+   trailBuy=true;
+   trailSell=true;
   }
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -55,12 +58,24 @@ BBandsMaAngle::~BBandsMaAngle()
 //+------------------------------------------------------------------+
 void BBandsMaAngle::Run()
   {
+   string comment="";
+
+//+------------------------------------------------------------------+
+//|                    calculate angle of ma                         |
+//+------------------------------------------------------------------+
+//+---------------------[ get prices ]-----------------+
    MqlRates Prices[];
-   datetime dt;
    ArraySetAsSeries(Prices,true);
-//int count=CopyRates(Symbol(),Period(),0,Bars(Symbol(),Period()),Prices);
-   int count = CopyRates(Symbol(),Period(),0,3,Prices);
-   string signal="";
+   int count = CopyRates(Symbol(),Period(),0,10,Prices);
+//+--------------------[ get ma ]----------------------+
+   double maArray[];
+   int maHandle= iMA(Symbol(),Period(),270,0,MODE_SMA,PRICE_CLOSE);
+   CopyBuffer(maHandle,0,1,10,maArray);
+   ArraySetAsSeries(maArray,true);
+   double angle=mam.angle(Prices,maArray);
+   comment+="angle => "+angle+"\n";
+
+//+--------------------[ get bbands indicator ]----------------------+
    double midBandArray[];
    double upperBandArray[];
    double lowerBandArray[];
@@ -75,6 +90,13 @@ void BBandsMaAngle::Run()
    CopyBuffer(bbHandl,1,0,3,upperBandArray);
    CopyBuffer(bbHandl,2,0,3,lowerBandArray);
 
+//+--------------------[  bbands signals ]----------------------+
+//if(!canBuy)
+//{
+//}
+//if(!canSell)
+//{
+//}
    canBuy=Prices[2].close<=lowerBandArray[2]&&Prices[1].close>=lowerBandArray[1];
    canSell=Prices[2].close>=upperBandArray[2]&&Prices[1].close<=upperBandArray[1];
 
@@ -85,7 +107,6 @@ void BBandsMaAngle::Run()
 
    if(canBuy)
      {
-      signal="buy";
       if(buyLock)
         {
          return;
@@ -105,7 +126,6 @@ void BBandsMaAngle::Run()
      }
    if(canSell)
      {
-      signal="sell";
       if(sellLock)
         {
          return;
@@ -141,25 +161,32 @@ void BBandsMaAngle::Run()
       if(trailBuy)
         {
          //tm.trail(POSITION_TYPE_BUY);
-         tm.trailWithAtr();
+         //tm.trailWithAtr();
+         tm.trailWithBalanceFraction(0.001);
         }
       else
         {
-         trailBuy=Prices[1].low<=upperBandArray[1]&&Prices[1].high>=upperBandArray[1];
+         trailBuy=true;
+         //trailBuy=Prices[1].low<=upperBandArray[1]&&Prices[1].high>=upperBandArray[1];
+         //trailBuy=angle>=0&&angle<=22.5;
+         //trailBuy=angle>=-22.5&&angle<=22.5;
         }
 
       if(trailSell)
         {
          //tm.trail(POSITION_TYPE_SELL);
-         tm.trailWithAtr();
+         //tm.trailWithAtr();
+         tm.trailWithBalanceFraction(0.001);
         }
       else
         {
-         trailSell=Prices[1].low<=lowerBandArray[1]&&Prices[1].high>=lowerBandArray[1];
-
+         trailSell=true;
+         //trailSell=Prices[1].low<=lowerBandArray[1]&&Prices[1].high>=lowerBandArray[1];
+         //trailSell=angle>=-22.5&&angle<=0 ;
+         //trailSell=angle>=-22.5&&angle<=22.5;
         }
-
      }
+   Comment(comment+tm.comment);
   }
 
 //+------------------------------------------------------------------+

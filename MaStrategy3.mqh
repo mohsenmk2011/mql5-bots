@@ -56,8 +56,8 @@ public:
 MaStrategy3::MaStrategy3()
   {
    PriceAverageDistanceFromD1=20.0;
-   MaH4Handle= iMA(Symbol(),PERIOD_M1,240,0,MODE_EMA,PRICE_CLOSE);
-   MaD1Handle= iMA(Symbol(),PERIOD_M1,1440,0,MODE_EMA,PRICE_CLOSE);
+   MaH4Handle= iMA(Symbol(),Period(),54,0,MODE_SMA,PRICE_CLOSE);
+   MaD1Handle= iMA(Symbol(),Period(),270,0,MODE_SMA,PRICE_CLOSE);
    DistanceAtCross_H4_D1=0.0;
    CurrentDistance_H4_D1=0.0;
    D1CrossedH4=false;
@@ -82,7 +82,7 @@ void MaStrategy3::Run()
    string commment="";
    CopyBuffer(MaH4Handle,0,1,10,MaH4Array);
    ArraySetAsSeries(MaH4Array,true);
-   CopyBuffer(MaD1Handle,0,1,2,MaD1Array);
+   CopyBuffer(MaD1Handle,0,1,10,MaD1Array);
    ArraySetAsSeries(MaD1Array,true);
 
    double CurrentDistance_H4_D1=NormalizeDouble(Distance(MaH4Array[0],MaD1Array[0]),Digits());
@@ -93,9 +93,9 @@ void MaStrategy3::Run()
    ArraySetAsSeries(Prices,true);
    int count = CopyRates(Symbol(),Period(),0,10,Prices);
 
-   double angle=mam.angle(Prices,MaH4Array);
+   double angle=mam.angle(Prices,MaD1Array);
 
-   commment+="angle => "+angle+"\n";
+   commment+="angle d1 => "+angle+"\n";
 
    D1IsAboveH4=BiggerThan(MaD1Array,MaH4Array);
 
@@ -106,14 +106,14 @@ void MaStrategy3::Run()
    commment+="BuyPrice= "+DoubleToString(symbolInfo.Ask(),Digits());
    if(H4CrossedD1)
      {
-      commment+="H4 Crossed D1("+DoubleToString(DistanceAtCross_H4_D1,Digits())+")\n";
+      commment+="Is Waiting for CrossD1 ("+DoubleToString(DistanceAtCross_H4_D1,Digits())+")\n";
       positionInfo.SelectLast();
       commment+="LastTicket="+IntegerToString(positionInfo.Ticket())+")\n";
      }
    else
      {
       commment+="D1 Is Above=> trail sell \n";
-      tm.trailWithAtr();
+      //tm.trailWithAtr();
       H4CrossedD1=CrossOver(MaH4Array,MaD1Array);
       if(H4CrossedD1)
         {
@@ -134,7 +134,16 @@ void MaStrategy3::Run()
             trade.PositionClose(Symbol());
            }
          Print("Is Buying ...");
-         trade.Buy(0.5,Symbol(),symbolInfo.Ask());
+         if(angle>=22.5&&angle<=22.5)
+           {
+            //agaistnt of strategy
+            trade.Sell(0.5,Symbol(),symbolInfo.Bid());
+           }
+         else
+           {
+
+            trade.Buy(0.5,Symbol(),symbolInfo.Ask());
+           }
         }
      }
 //-------------------------------------------------
@@ -147,7 +156,7 @@ void MaStrategy3::Run()
    else
      {
       commment+="H4 is above => trail buy \n";
-      tm.trailWithAtr();
+      //tm.trailWithAtr();
       D1CrossedH4=CrossOver(MaD1Array,MaH4Array);
       if(D1CrossedH4)
         {
@@ -168,7 +177,16 @@ void MaStrategy3::Run()
             trade.PositionClose(Symbol());
            }
          Print("Is Selling ...");
-         trade.Sell(0.5,Symbol(),symbolInfo.Bid());
+
+         if(angle>=22.5&&angle<=22.5)
+           {
+            trade.Buy(0.5,Symbol(),symbolInfo.Ask());
+           }
+         else
+           {
+            trade.Sell(0.5,Symbol(),symbolInfo.Bid());
+           }
+
         }
      }
 //------------------------------------------------------------------

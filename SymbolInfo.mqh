@@ -8,31 +8,40 @@
 #property version   "1.00"
 #include <Trade/SymbolInfo.mqh>
 
-class SymbolInfo : public CSymbolInfo{
-   private:
-   
-   public:
-      SymbolInfo();
-     ~SymbolInfo();
-     double AskTick();
-     double BidTick();
-};
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-SymbolInfo::SymbolInfo(){
-}
+class SymbolInfo : public CSymbolInfo
+  {
+private:
+
+public:
+                     SymbolInfo();
+                    ~SymbolInfo();
+   double            AskTick();
+   double            BidTick();
+  };
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-SymbolInfo::~SymbolInfo(){
-}
+SymbolInfo::SymbolInfo()
+  {
+  }
 //+------------------------------------------------------------------+
-double SymbolInfo::AskTick(){
+//|                                                                  |
+//+------------------------------------------------------------------+
+SymbolInfo::~SymbolInfo()
+  {
+  }
+//+------------------------------------------------------------------+
+double SymbolInfo::AskTick()
+  {
    return SymbolInfoDouble(Symbol(),SYMBOL_ASK);
-}
+  }
 
 //+------------------------------------------------------------------+
-double SymbolInfo::BidTick(){
+double SymbolInfo::BidTick()
+  {
    return SymbolInfoDouble(Symbol(),SYMBOL_BID);
-}
+  }
+//+------------------------------------------------------------------+

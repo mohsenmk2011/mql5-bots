@@ -1,12 +1,14 @@
-//+------------------------------------------------------------------+
-//|                                               BBandsStrategy.mqh |
-//|                                  Copyright 2022, MetaQuotes Ltd. |
-//|                                             https://www.mql5.com |
-//+------------------------------------------------------------------+
+//+------------------------------------------------------------------------------+
+//|                                                  bbAtHighLow.mqh             |
+//|       this bot will buy and sell at high and low of bbands                   |
+//|                                             https://www.mql5.com          |
+//+------------------------------------------------------------------------------+
 #include <Jooya/Strategy.mqh>
+#include <Jooya/PositionManager.mqh>
 #include <Jooya/TrailingManager.mqh>
 #include <Trade/SymbolInfo.mqh>
 #include <Trade/DealInfo.mqh>
+#include <Jooya/MaManager.mqh>
 
 #property copyright "Copyright 2022, MetaQuotes Ltd."
 #property link      "https://www.mql5.com"
@@ -15,49 +17,64 @@
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-class BBandsStrategy : public Strategy
+class BBAtHighLow : public Strategy
   {
 private:
    bool              buyLock;
    bool              sellLock;
 
-   bool              canSell;
-   bool              canBuy;
+   bool              sellSignal;
+   bool              buySignal;
 
    bool              trailBuy;
    bool              trailSell;
 
    TrailingManager   tm;
+   PositionManager   pm;
+   MaManager         mam;
+   string            comment;
 
 public:
-                     BBandsStrategy();
-                    ~BBandsStrategy();
+                     BBAtHighLow();
+                    ~BBAtHighLow();
    void              Run();
   };
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-BBandsStrategy::BBandsStrategy()
+BBAtHighLow::BBAtHighLow()
   {
    buyLock=false;
    sellLock=false;
-   canBuy=false;
-   canSell=false;
+   buySignal=false;
+   sellSignal=false;
+
+   this.comment="";
   }
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-BBandsStrategy::~BBandsStrategy()
+BBAtHighLow::~BBAtHighLow()
   {
   }
 //+------------------------------------------------------------------+
 //|                          Run                                     |
 //+------------------------------------------------------------------+
-void BBandsStrategy::Run()
+void BBAtHighLow::Run()
   {
+   this.comment="";
+//+--------------------[ copy rates ]--------------------------------+
    MqlRates Prices[];
    ArraySetAsSeries(Prices,true);
-   int count = CopyRates(Symbol(),Period(),0,3,Prices);
+   int count = CopyRates(Symbol(),Period(),0,10,Prices);
+//+--------------------[ ma 270 ma270Angle ]--------------------------------+
+   double maArray[];
+   int maHandle= iMA(Symbol(),Period(),270,0,MODE_SMA,PRICE_CLOSE);
+   CopyBuffer(maHandle,0,1,10,maArray);
+   ArraySetAsSeries(maArray,true);
+   double ma270Angle= NormalizeDouble(mam.angle(Prices,maArray),2);
+   comment+="MA Angle (270) => "+ma270Angle+"\n";
+//+-------------------- initioal bbands indicator--------------------------------+
    double midBandArray[];
    double upperBandArray[];
    double lowerBandArray[];
@@ -66,21 +83,23 @@ void BBandsStrategy::Run()
    ArraySetAsSeries(upperBandArray,true);
    ArraySetAsSeries(lowerBandArray,true);
 
-   int bbHandl=iBands(Symbol(),Period(),20,0,2.5,PRICE_CLOSE);
+   int bbHandl=iBands(Symbol(),Period(),20,0,2.0,PRICE_CLOSE);
 
    CopyBuffer(bbHandl,0,0,3,midBandArray);
    CopyBuffer(bbHandl,1,0,3,upperBandArray);
    CopyBuffer(bbHandl,2,0,3,lowerBandArray);
 
-   canBuy=Prices[2].close<=lowerBandArray[2]&&Prices[1].close>=lowerBandArray[1];
-   canSell=Prices[2].close>=upperBandArray[2]&&Prices[1].close<=upperBandArray[1];
+//+-------------------- bbands signals--------------------------------+
+   buySignal=Prices[0].low<lowerBandArray[0]&&ma270Angle>=-11.25;
+   sellSignal=Prices[0].high>upperBandArray[0]&& ma270Angle<=11.25;
+   
+   sellSignal=Prices[0].high>upperBandArray[0]&& ma270Angle<=11.25;
 
-   if(canBuy&&canSell)
+   if(buySignal&&sellSignal)
      {
       return;
      }
-
-   if(canBuy)
+   if(buySignal)
      {
       if(buyLock)
         {
@@ -90,7 +109,7 @@ void BBandsStrategy::Run()
         {
          trade.PositionCloseAll(POSITION_TYPE_SELL);
         }
-      trade.Buy(1.0,Symbol(),symbolInfo.Ask());
+      trade.Buy(pm.newPositionVolume(),Symbol(),symbolInfo.Ask(),pm.buyStopLoss(0.01));
       buyLock=true;
       sellLock=false;
       return;
@@ -99,7 +118,7 @@ void BBandsStrategy::Run()
      {
       buyLock=false;
      }
-   if(canSell)
+   if(sellSignal)
      {
       if(sellLock)
         {
@@ -109,7 +128,7 @@ void BBandsStrategy::Run()
         {
          trade.PositionCloseAll(POSITION_TYPE_BUY);
         }
-      trade.Sell(1.0,Symbol(),symbolInfo.Ask());
+      trade.Sell(pm.newPositionVolume(),Symbol(),symbolInfo.Ask(),pm.sellStopLoss(0.01));
       buyLock=false;
       sellLock=true;
      }
@@ -136,7 +155,7 @@ void BBandsStrategy::Run()
       if(trailBuy)
         {
          //tm.trail(POSITION_TYPE_BUY);
-         tm.trailWithAtr();
+         //tm.trailWithAtr();
         }
       else
         {
@@ -146,7 +165,8 @@ void BBandsStrategy::Run()
       if(trailSell)
         {
          //tm.trail(POSITION_TYPE_SELL);
-         tm.trailWithAtr();
+         //tm.trailWithAtr();
+         // tm.trailWithBalanceFraction(0.01);
         }
       else
         {
@@ -155,6 +175,9 @@ void BBandsStrategy::Run()
         }
 
      }
+//tm.trailWithBalanceFraction(0.01);//---
+
+   Comment(this.comment+tm.comment);
   }
 
 //+------------------------------------------------------------------+

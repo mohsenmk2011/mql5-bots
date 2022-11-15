@@ -7,8 +7,10 @@
 #property link      "https://www.mql5.com"
 #property version   "1.00"
 #include <Trade/Trade.mqh>
+#include <Trade/AccountInfo.mqh>
 #include <Jooya/SymbolInfo.mqh>
 #include <Jooya/PositionInfo.mqh>
+#include <Jooya/PositionManager.mqh>
 
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -19,18 +21,23 @@ private:
    CTrade            trade;
    PositionInfo      pi;
    SymbolInfo        si;
+   CAccountInfo       ai;
+   PositionManager   pm;
 
 public:
                      TrailingManager();
                     ~TrailingManager();
    void              trail(ENUM_POSITION_TYPE type);
    void              trailWithAtr();
+   void              trailWithBalanceFraction(double fraction);
+   string            comment;
   };
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
 TrailingManager::TrailingManager()
   {
+   comment="";
   }
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -41,14 +48,12 @@ TrailingManager::~TrailingManager()
 //+------------------------------------------------------------------+
 void TrailingManager::trailWithAtr()
   {
-   string comment="";
-
+   comment="";
    int atrHandle=iATR(Symbol(),Period(),14);
    double atrArray[];
    ArraySetAsSeries(atrArray,true);
    CopyBuffer(atrHandle,0,0,3,atrArray);
    double atrValue=NormalizeDouble(atrArray[0],5);
-
    double stoplossPoint=atrValue*100000;
    double newSL=0;
 
@@ -56,7 +61,7 @@ void TrailingManager::trailWithAtr()
    comment+="si.Bid()       => "+si.BidTick()+"\n";
    comment+="StopLoss(pips) => "+stoplossPoint+"\n";
    comment+="position count => "+pi.count()+"\n";
-         comment+="new StopLoss   => "+newSL+"\n";
+   comment+="new StopLoss   => "+newSL+"\n";
 //---
 
    for(int i=pi.count()-1; i>=0; i--)
@@ -66,8 +71,8 @@ void TrailingManager::trailWithAtr()
       ulong ticket = pi.Ticket();
       double currentSL=pi.StopLoss();
       double currentPrice=pi.PriceCurrent();
-      
-       if(pi.isBuy())
+
+      if(pi.isBuy())
         {
          newSL=si.AskTick()-stoplossPoint*Point();
         }
@@ -76,7 +81,7 @@ void TrailingManager::trailWithAtr()
         {
          newSL=si.BidTick()+stoplossPoint*Point();
         }
-        
+
       if(pi.isBuy()&&(newSL>currentSL||currentSL==0))
         {
          trade.PositionModify(ticket,newSL,0);
@@ -145,4 +150,64 @@ void TrailingManager::trail(ENUM_POSITION_TYPE type)
            }
      }
   }
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void TrailingManager::trailWithBalanceFraction(double fraction)
+  {
+   this.comment="------[ tm ]--------\n";
+   if(fraction>0.02)
+     {
+      Print("max fraction is 0.02");
+      return;
+     }
+   if(fraction<0.001)
+     {
+      Print("min fraction is 0.001");
+      return;
+     }
+   double newSL=0;
+   for(int i=pi.count()-1; i>=0; i--)
+     {
+      pi.SelectByIndex(i);
+      double currentSL =pi.StopLoss();
+      ulong ticket = pi.Ticket();
+      if(pi.isBuy())
+        {
+         newSL=pm.buyStopLoss(fraction);
+         this.comment+="newSL => "+newSL+"\n";
+         if(currentSL==0)
+           {
+            trade.PositionModify(ticket,newSL,0);
+           }
+         else
+           {
+            if(newSL>currentSL)
+              {
+               trade.PositionModify(ticket,newSL,0);
+              }
+           }
+        }
+      else
+         if(pi.isSell())
+           {
+            newSL=pm.sellStopLoss(fraction);
+            if(currentSL==0)
+              {
+               trade.PositionModify(ticket,newSL,0);
+              }
+            else
+              {
+               if(newSL<currentSL)
+                 {
+                  trade.PositionModify(ticket,newSL,0);
+                 }
+              }
+           }
+
+      this.comment+="newSL => "+newSL+"\n";
+     }
+  }
+//+------------------------------------------------------------------+
+
 //+------------------------------------------------------------------+

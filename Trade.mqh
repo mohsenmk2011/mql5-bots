@@ -42,12 +42,12 @@ Trade::~Trade()
 //+------------------------------------------------------------------+
 void Trade::PositionCloseAll(ENUM_POSITION_TYPE type)
   {
-   Print("Close positions of type => "+type);
-   Print("Open position count => "+pi.count());
+   //Print("Close positions of type => "+type);
+   //Print("Open position count => "+pi.count());
    for(int i=pi.count()-1; i>=0; i--)
      {
       pi.SelectByIndex(i);
-      Print("Current position type => "+pi.PositionType());
+      //Print("Current position type => "+pi.PositionType());
       if(pi.PositionType()==type)
         {
          ulong ticket = pi.Ticket();
