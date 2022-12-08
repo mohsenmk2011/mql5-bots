@@ -55,9 +55,11 @@ BBandsStrategy::~BBandsStrategy()
 //+------------------------------------------------------------------+
 void BBandsStrategy::Run()
   {
+//+--------------------------[ copy rates ]-------------------------+
    MqlRates Prices[];
    ArraySetAsSeries(Prices,true);
    int count = CopyRates(Symbol(),Period(),0,3,Prices);
+//+--------------------------[ copy bbands ]-------------------------+
    double midBandArray[];
    double upperBandArray[];
    double lowerBandArray[];
