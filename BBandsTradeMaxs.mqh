@@ -1,10 +1,10 @@
-//+------------------------------------------------------------------+
-//|                                              BBandsTradeMaxs.mqh |
-//|                                  Copyright 2022, MetaQuotes Ltd. |
-//|       trade the maximizes=> when prices goes over from bands(lower or upper)       |
-//|       it will trade oppsite of trend       |
-//|                                             https://www.mql5.com |
-//+------------------------------------------------------------------+
+//+--------------------------------------------------------------------------------------+
+//|                                   BBandsTradeMaxs.mqh                                |
+//|       trade the maximizes=> when prices goes over from bands(lower or upper)         |
+//|       it will trade oppsite of trend:                                                |
+//|           1- when price passed up  (upper band + atr) sell                           |
+//|           2- when price passed down (lower band + atr) => buy                        |
+//+--------------------------------------------------------------------------------------+
 #include <Jooya/Strategy.mqh>
 #include <Jooya/PositionManager.mqh>
 #include <Jooya/TrailingManager.mqh>
