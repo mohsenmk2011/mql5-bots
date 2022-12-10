@@ -16,7 +16,7 @@
 //|                                                                  |
 //+------------------------------------------------------------------+
 class BBandsStrategy : public Strategy
-  {
+{
 private:
    bool              buyLock;
    bool              sellLock;
@@ -33,28 +33,28 @@ public:
                      BBandsStrategy();
                     ~BBandsStrategy();
    void              Run();
-  };
+};
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
 BBandsStrategy::BBandsStrategy()
-  {
+{
    buyLock=false;
    sellLock=false;
    canBuy=false;
    canSell=false;
-  }
+}
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
 BBandsStrategy::~BBandsStrategy()
-  {
-  }
+{
+}
 //+------------------------------------------------------------------+
 //|                          Run                                     |
 //+------------------------------------------------------------------+
 void BBandsStrategy::Run()
-  {
+{
 //+--------------------------[ copy rates ]-------------------------+
    MqlRates Prices[];
    ArraySetAsSeries(Prices,true);
@@ -74,89 +74,90 @@ void BBandsStrategy::Run()
    CopyBuffer(bbHandl,1,0,3,upperBandArray);
    CopyBuffer(bbHandl,2,0,3,lowerBandArray);
 
+//+--------------------------[  signals ]-------------------------+
    canBuy=Prices[2].close<=lowerBandArray[2]&&Prices[1].close>=lowerBandArray[1];
    canSell=Prices[2].close>=upperBandArray[2]&&Prices[1].close<=upperBandArray[1];
 
    if(canBuy&&canSell)
-     {
+   {
       return;
-     }
+   }
 
    if(canBuy)
-     {
+   {
       if(buyLock)
-        {
+      {
          return;
-        }
+      }
       if(positionInfo.count()>0)
-        {
+      {
          trade.PositionCloseAll(POSITION_TYPE_SELL);
-        }
+      }
       trade.Buy(1.0,Symbol(),symbolInfo.Ask());
       buyLock=true;
       sellLock=false;
       return;
-     }
+   }
    else
-     {
+   {
       buyLock=false;
-     }
+   }
    if(canSell)
-     {
+   {
       if(sellLock)
-        {
+      {
          return;
-        }
+      }
       if(positionInfo.count()>0)
-        {
+      {
          trade.PositionCloseAll(POSITION_TYPE_BUY);
-        }
+      }
       trade.Sell(1.0,Symbol(),symbolInfo.Ask());
       buyLock=false;
       sellLock=true;
-     }
+   }
    else
-     {
+   {
       sellLock=false;
-     }
+   }
    if(trailBuy)
-     {
+   {
       if(positionInfo.buyCount()==0)
-        {
+      {
          trailBuy=false;
-        }
-     }
+      }
+   }
    if(trailSell)
-     {
+   {
       if(positionInfo.sellCount()==0)
-        {
+      {
          trailSell=false;
-        }
-     }
+      }
+   }
    if(positionInfo.count()>0)
-     {
+   {
       if(trailBuy)
-        {
+      {
          //tm.trail(POSITION_TYPE_BUY);
          tm.trailWithAtr();
-        }
+      }
       else
-        {
+      {
          trailBuy=Prices[1].low<=upperBandArray[1]&&Prices[1].high>=upperBandArray[1];
-        }
+      }
 
       if(trailSell)
-        {
+      {
          //tm.trail(POSITION_TYPE_SELL);
          tm.trailWithAtr();
-        }
+      }
       else
-        {
+      {
          trailSell=Prices[1].low<=lowerBandArray[1]&&Prices[1].high>=lowerBandArray[1];
 
-        }
+      }
 
-     }
-  }
+   }
+}
 
 //+------------------------------------------------------------------+
