@@ -49,7 +49,7 @@ void HedStochMaRsiStrategy::Run(){
    //int StochHandle = iStochastic(Symbol(),PERIOD_M1,24,4,3,MODE_EMA,STO_LOWHIGH);
    
    int StochHandle = iStochastic(Symbol(),PERIOD_H1,24,4,4,MODE_EMA,STO_LOWHIGH);
-   CopyBuffer(StochHandle,0,1,2,KArray);
+   CopyBuffer(StochHandle,0,1,2,KArray);//0 is MAIN_LINE
    CopyBuffer(StochHandle,1,1,2,DArray);
    Comment("K= ",KArray[0],"\n");
    Comment("D= ",DArray[0],"\n");
