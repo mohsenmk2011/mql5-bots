@@ -2,7 +2,39 @@
 # You should customize this list as applicable to your project.
 # Learn more about .gitignore:
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
-
+# the file an folder that in mql5 
+Images/
+Indicators/
+Profiles/
+Scripts/
+experts.dat
+#================================
+Include/Arrays
+Include/ChartObjects
+Include/Controls
+Include/Files
+Include/Graphics
+Include/MovingAverages.mqh
+Include/OpenCL
+Include/Strings
+Include/Trade
+Include/WinAPI
+Include/Canvas
+Include/Charts
+Include/Expert
+Include/Generic
+Include/Indicators
+Include/Math
+Include/Object.mqh
+Include/StdLibErr.mqh
+Include/Tools
+Include/VirtualKeys.mqh
+#=================================
+Experts/Advisors
+Experts/*.ex5
+Experts/Examples
+Experts/JooyaExperts/*.ex5
+#++++++++++++++++++++++++++++++++++++
 # Node artifact files
 node_modules/
 dist/
