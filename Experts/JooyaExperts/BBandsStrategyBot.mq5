@@ -23,6 +23,7 @@
 #include <Jooya/BBandsTradeMaxs.mqh>
 #include <Jooya/BBandsMaAngle.mqh>
 #include <Jooya/BBStochStrategy.mqh>
+#include <Jooya/BBandsHLMTF.mqh>
 #property copyright "Copyright 2021, Jooya Software Corp."
 #property link      "https://www.mql5.com"
 #property version   "2.00"
@@ -52,6 +53,7 @@ BBAtHighLow bbhl;
 BBandsTradeMaxs bbtm;
 BBandsMaAngle bbMaAngle;
 BBStochStrategy bbStoch;
+BBandsHLMTF bbHLMTF;
 //====================< Bollinger bands strategy >=====================================
 input double   InpLots           = 1.0;      // Lots
 
@@ -87,8 +89,8 @@ void OnTick()
 //stoch.Run();
 //stochCtfs.Run();
 ///stochTpc.Run();
-
-bbs.Run();
+bbHLMTF.Run();
+//bbs.Run();
 //bbmid.Run();
 //bbsBreakout.Run();/////////////////
 //bbmid2.Run();
