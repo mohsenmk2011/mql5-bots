@@ -5,11 +5,9 @@
 //+------------------------------------------------------------------+
 
 enum BBandsStatus {
-   
-   PricePassedUpUpperBand,
-   PricePassedDownUpperBand,
-   PricePassedUpMiddleBand,
-   PricePassedDownMiddleBand,
-   PricePassedUpLowerBand,
-   PricePassedDownLowerBand,
+   BBands_Status_Unkown ,
+   BBands_Status_Passed_UpperBand,
+   BBands_Status_Between_Upper_MiddleBand,
+   BBands_Status_Between_Lower_MiddleBand,
+   BBands_Status_Passed_LowerBand,
 };
