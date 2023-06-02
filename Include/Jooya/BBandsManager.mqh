@@ -52,12 +52,20 @@ public:
    //checks the buy and sell signals and will open new positions based on signal
    void              checkSignal();
    //checks all positions and will close each positon that should be close based on strategy
-   void              checkPositions();
+   void              checkCloseCondition();
    void              checkPassedOverBandsStrategy();
+   void              checkMultTimeFrameStrategy();
+   void              checkSimpleStrategy();
 
    void              drawObject();
 
    BBandsStrategies  currentStrategy;
+
+   bool              use_Simple_Strategy;
+   bool              use_Passed_OverBands_Strategy;
+   bool              use_SimpleMultiTimeFrame_Strategy;
+   bool              user_MultiTimeFrameWithAngle_Strategy;
+
    BBandsStatus      m1_Status;
    BBandsStatus      m5_Status;
    BBandsStatus      m15_Status;
@@ -112,6 +120,7 @@ BBandsManager::BBandsManager()
    h4_Status = BBands_Status_Unkown;
 
    currentStrategy = BBandsStrategies_Unkown;
+
 }
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -275,23 +284,37 @@ BBandsStatus BBandsManager::getStatus(MqlRates& price[],double& upperband[],doub
 //+------------------------------------------------------------------+
 void BBandsManager::checkSignal()
 {
-   if(currentStrategy == BBandsStrategies_Passed_OverBands)
+   rm.copyRates();
+   readIndicotor();
+   comment="";
+   if(use_Passed_OverBands_Strategy)
    {
+      updateStatus();
+      comment +="Strategy => Passed_OverBands\n";
       checkPassedOverBandsStrategy();
    }
+   if(use_Simple_Strategy)
+   {
+      comment +="Strategy => Simple\n";
+      checkSimpleStrategy();
+   }
+   if(use_SimpleMultiTimeFrame_Strategy)
+   {
+      comment +="Strategy => MultiTimeFrame\n";
+      checkMultTimeFrameStrategy();
+   }
+   checkCloseCondition();
 }
-
 //+------------------------------------------------------------------+
 //|          will check passed over bands strategy                   |
 //+------------------------------------------------------------------+
 void BBandsManager::checkPassedOverBandsStrategy()
 {
-   comment="";
    comment +="h1 status=> ";
    if(h1_Status==BBands_Status_Passed_LowerBand)
    {
       comment +="Passed LowerBand\n";
-      canBuy=rm.M1Prices[2].close<=M1LowerBandArray[2]&&rm.M1Prices[1].close>=M1LowerBandArray[1];
+      canBuy=jr.IsPriceTouchedDown(rm.M1Prices,M1LowerBandArray);
       if(canBuy)
       {
          if(buyLock)
@@ -318,7 +341,7 @@ void BBandsManager::checkPassedOverBandsStrategy()
    else if(h1_Status==BBands_Status_Passed_UpperBand)
    {
       comment +="Passed UpperBand\n";
-      canSell = rm.M1Prices[2].close>=M1UpperBandArray[2]&&rm.M1Prices[1].close<=M1UpperBandArray[1];
+      canSell = jr.IsPriceTouchedTop(rm.M1Prices,M1UpperBandArray);
       if(canSell)
       {
          if(sellLock)
@@ -352,7 +375,70 @@ void BBandsManager::checkPassedOverBandsStrategy()
    }
 }
 //+------------------------------------------------------------------+
-void BBandsManager::checkPositions()
+//|                                                                  |
+//+------------------------------------------------------------------+
+void BBandsManager::checkMultTimeFrameStrategy()
+{
+}
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void BBandsManager::checkSimpleStrategy()
+{
+   comment +="h1 status=> ";
+   comment +="Passed LowerBand\n";
+   canBuy=rm.M1Prices[2].close<=M1LowerBandArray[2]&&rm.M1Prices[1].close>=M1LowerBandArray[1];
+   if(canBuy)
+   {
+      if(buyLock)
+      {
+         return;
+      }
+      bool isUpCandle0 = jr.IsUpCandle(rm.M1Prices[0]);
+      bool isUpCandle1 = jr.IsUpCandle(rm.M1Prices[1]);
+      bool isUpCandle = isUpCandle0&&isUpCandle1;
+      if(isUpCandle)
+      {
+         double sl = rm.getFirstLowerLow();
+         Print("stop loss => "+sl);
+         trade.Buy(10.0,Symbol(),symbolInfo.Ask(),sl);
+         buyLock=true;
+         sellLock=false;
+         return;
+      }
+   }
+   else
+   {
+      buyLock=false;
+   }
+
+   comment +="Passed UpperBand\n";
+   canSell = rm.M1Prices[2].close>=M1UpperBandArray[2]&&rm.M1Prices[1].close<=M1UpperBandArray[1];
+   if(canSell)
+   {
+      if(sellLock)
+      {
+         return;
+      }
+      bool isDownCandle0 = jr.IsDownCandle(rm.M1Prices[0]);
+      bool isDownCandle1 = jr.IsDownCandle(rm.M1Prices[1]);
+      bool isDownCandle = isDownCandle0&&isDownCandle1;
+      if(isDownCandle)
+      {
+         double sl = rm.getFirstHigherHigh();
+         Print("stop loss => "+sl);
+         trade.Sell(10.0,Symbol(),symbolInfo.Ask(),sl);
+         buyLock=false;
+         sellLock=true;
+      }
+   }
+   else
+   {
+      sellLock=false;
+   }
+}
+//+------------------------------------------------------------------+
+void BBandsManager::checkCloseCondition()
 {
    int minProfit = 100;
    int count=positionInfo.count();
@@ -365,6 +451,7 @@ void BBandsManager::checkPositions()
       }
    }
 }
+
 //+------------------------------------------------------------------+
 void BBandsManager::drawObject()
 {
