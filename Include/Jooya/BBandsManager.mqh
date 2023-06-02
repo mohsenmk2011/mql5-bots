@@ -20,7 +20,7 @@
 #include <Jooya/MaManager.mqh>
 #include <Jooya/PositionManager.mqh>
 #include <Jooya/JooyaRates.mqh>
-
+#include <Jooya/BBandsStrategies.mqh>
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -56,6 +56,7 @@ public:
 
    void              drawObject();
 
+   BBandsStrategies currentStrategy;
    BBandsStatus      m1_Status;
    BBandsStatus      m5_Status;
    BBandsStatus      m15_Status;
@@ -108,6 +109,8 @@ BBandsManager::BBandsManager()
    m30_Status = BBands_Status_Unkown;
    h1_Status = BBands_Status_Unkown;
    h4_Status = BBands_Status_Unkown;
+   
+   currentStrategy = BBandsStrategies_Unkown;
 }
 //+------------------------------------------------------------------+
 //|                                                                  |

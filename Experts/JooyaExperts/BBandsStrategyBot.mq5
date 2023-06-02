@@ -48,6 +48,7 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
 {
+   bBandsManager.currentStrategy = BBandsStrategies_MultiTimeFrame;
    bBandsManager.readIndicotor();
    bBandsManager.updateStatus();
    bBandsManager.checkSignal();
