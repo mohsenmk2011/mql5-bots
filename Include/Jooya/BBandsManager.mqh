@@ -53,10 +53,11 @@ public:
    void              checkSignal();
    //checks all positions and will close each positon that should be close based on strategy
    void              checkPositions();
+   void              checkPassedOverBandsStrategy();
 
    void              drawObject();
 
-   BBandsStrategies currentStrategy;
+   BBandsStrategies  currentStrategy;
    BBandsStatus      m1_Status;
    BBandsStatus      m5_Status;
    BBandsStatus      m15_Status;
@@ -109,7 +110,7 @@ BBandsManager::BBandsManager()
    m30_Status = BBands_Status_Unkown;
    h1_Status = BBands_Status_Unkown;
    h4_Status = BBands_Status_Unkown;
-   
+
    currentStrategy = BBandsStrategies_Unkown;
 }
 //+------------------------------------------------------------------+
@@ -273,6 +274,17 @@ BBandsStatus BBandsManager::getStatus(MqlRates& price[],double& upperband[],doub
 }
 //+------------------------------------------------------------------+
 void BBandsManager::checkSignal()
+{
+   if(currentStrategy == BBandsStrategies_Passed_OverBands)
+   {
+      checkPassedOverBandsStrategy();
+   }
+}
+
+//+------------------------------------------------------------------+
+//|          will check passed over bands strategy                   |
+//+------------------------------------------------------------------+
+void BBandsManager::checkPassedOverBandsStrategy()
 {
    comment="";
    comment +="h1 status=> ";
