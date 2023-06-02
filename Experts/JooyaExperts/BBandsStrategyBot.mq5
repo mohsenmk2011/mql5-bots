@@ -24,10 +24,10 @@ BBandsManager bBandsManager;
 //====================< Bollinger bands strategy >=====================================
 input double   InpLots           = 1.0;      // Lots
 
-input bool Passed_OverBands = true; // Passed Over Bands,
+input bool Passed_OverBands = true; // Passed Over Bands
 input bool Simple = false; // Simple
 input bool SimpleMultiTimeFrame = false; // Simple Multi Time Frame
-input bool MultiTimeFrameWithAngle, = false; // Multi Time Frame With Angle
+input bool MultiTimeFrameWithAngle = false; // Multi Time Frame With Angle
 // Add more input variables for additional strategies
 
 //+------------------------------------------------------------------+
