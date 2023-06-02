@@ -8,6 +8,8 @@
 
 enum BBandsStrategies {
    BBandsStrategies_Unkown ,
+   BBandsStrategies_Simple,
    BBandsStrategies_Passed_OverBands,
-   BBandsStrategies_MultiTimeFrame,
+   BBandsStrategies_SimpleMultiTimeFrame,
+   BBandsStrategies_MultiTimeFrameWithAngle,
 };
