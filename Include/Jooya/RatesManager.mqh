@@ -3,25 +3,31 @@
 //|                                            Copyright 2022, Jooya |
 //|                                             https://www.mql5.com |
 //+------------------------------------------------------------------+
+
+#include <Jooya/JooyaRates.mqh>
+
 #property copyright "Copyright 2022, Jooya"
 #property link      "https://www.mql5.com"
 #property version   "1.00"
 class RatesManager
 {
 private:
-
+   JooyaRates        jr;
 public:
-   RatesManager();
-   ~RatesManager();
-   MqlRates M1Prices[];
-   MqlRates M5Prices[];
-   MqlRates M15Prices[];
-   MqlRates M30Prices[];
-   MqlRates H1Prices[];
-   MqlRates H4Prices[];
+                     RatesManager();
+                    ~RatesManager();
+   MqlRates          M1Prices[];
+   MqlRates          M5Prices[];
+   MqlRates          M15Prices[];
+   MqlRates          M30Prices[];
+   MqlRates          H1Prices[];
+   MqlRates          H4Prices[];
    //set the time frames that should be copy
-   void setTimeframes();
-   void copyRates();
+   void              setTimeframes();
+   void              copyRates();
+
+   double             getFirstHigherHigh();
+   double             getFirstLowerLow();
 };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -41,10 +47,13 @@ void RatesManager::setTimeframes()
    Print("is setting time frames that should be copy");
 }
 
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
 void RatesManager::copyRates()
 {
    Print("is setting time frames that should be copy");
-   
+
 //+----------------------------[ M1 copy rates ]-----------------------------+
    ArraySetAsSeries(M1Prices,true);
    CopyRates(Symbol(),PERIOD_M1,0,10,M1Prices);
@@ -65,3 +74,40 @@ void RatesManager::copyRates()
    CopyRates(Symbol(),PERIOD_H4,0,10,H4Prices);
 }
 
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+double RatesManager::getFirstHigherHigh()
+{
+   double high = -1;
+   int index =-1;
+   do
+   {
+      index++;
+      if(M1Prices[index].high>high)
+      {
+         high = M1Prices[index].high;
+      }
+   }
+   while(jr.IsDownCandle(M1Prices[index]));
+   return high;
+}
+//+------------------------------------------------------------------+
+double RatesManager::getFirstLowerLow()
+{
+   double low = -1;
+   int index =-1;
+   do
+   {
+      index++;
+      if(M1Prices[index].low<low)
+      {
+         low = M1Prices[index].low;
+      }
+   }
+   while(jr.IsUpCandle(M1Prices[index]));
+   return low;
+}
+//+------------------------------------------------------------------+
