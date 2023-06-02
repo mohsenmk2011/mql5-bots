@@ -26,6 +26,10 @@ public:
    double            UpShadow(MqlRates &rate);
    //===============================================================================
    bool              IsHammerCandle(MqlRates &rate);
+   bool              IsPriceTouchedTop(MqlRates& prices[],double& line[]);
+   bool              IsPriceTouchedDown(MqlRates& prices[],double& line[]);
+   bool              IsPricePassedUp(MqlRates& prices[],double& line[]);
+   bool              IsPricePassedDown(MqlRates& prices[],double& line[]);
   };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -135,3 +139,32 @@ bool JooyaRates::IsHammerCandle(MqlRates &rate)
    return true;
   }
 //+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//|                 Is Price Touched Top                             |
+//+------------------------------------------------------------------+
+bool JooyaRates::IsPriceTouchedTop(MqlRates& prices[],double& line[])
+{
+   return prices[2].close>=line[2]&&prices[1].close<=line[1];
+}
+//+------------------------------------------------------------------+
+//|                 Is Price Touched Down                            |
+//+------------------------------------------------------------------+
+bool JooyaRates::IsPriceTouchedDown(MqlRates& prices[],double& line[])
+{
+   return prices[2].close<=line[2]&&prices[1].close>=line[1];
+}
+//+------------------------------------------------------------------+
+//|                  Is Price Passed Up                              |
+//+------------------------------------------------------------------+
+bool JooyaRates::IsPricePassedUp(MqlRates& prices[],double& line[])
+{
+   return prices[2].close<=line[2]&&prices[1].close>=line[1];
+}
+//+------------------------------------------------------------------+
+//|                  Is Price Passed Down                            |
+//+------------------------------------------------------------------+
+bool JooyaRates::IsPricePassedDown(MqlRates& prices[],double& line[])
+{
+   return prices[2].close>=line[2]&&prices[1].close<=line[1];
+}
