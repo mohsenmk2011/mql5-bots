@@ -45,8 +45,8 @@ private:
    bool              canBuy;
 
 public:
-                     BBandsManager();
-                    ~BBandsManager();
+   BBandsManager();
+   ~BBandsManager();
    void              updateStatus();
 
    //checks the buy and sell signals and will open new positions based on signal
@@ -387,7 +387,7 @@ void BBandsManager::checkSimpleStrategy()
 {
    comment +="h1 status=> ";
    comment +="Passed LowerBand\n";
-   canBuy=rm.M1Prices[2].close<=M1LowerBandArray[2]&&rm.M1Prices[1].close>=M1LowerBandArray[1];
+   canBuy=jr.IsPriceTouchedDown(rm.M1Prices,M1LowerBandArray);
    if(canBuy)
    {
       if(buyLock)
@@ -413,7 +413,7 @@ void BBandsManager::checkSimpleStrategy()
    }
 
    comment +="Passed UpperBand\n";
-   canSell = rm.M1Prices[2].close>=M1UpperBandArray[2]&&rm.M1Prices[1].close<=M1UpperBandArray[1];
+   canSell = jr.IsPriceTouchedTop(rm.M1Prices,M1UpperBandArray);
    if(canSell)
    {
       if(sellLock)
@@ -427,7 +427,7 @@ void BBandsManager::checkSimpleStrategy()
       {
          double sl = rm.getFirstHigherHigh();
          Print("stop loss => "+sl);
-         trade.Sell(10.0,Symbol(),symbolInfo.Ask(),sl);
+         trade.Sell(10.0,Symbol(),symbolInfo.Bid(),sl);
          buyLock=false;
          sellLock=true;
       }
@@ -448,6 +448,28 @@ void BBandsManager::checkCloseCondition()
       if(positionInfo.Profit()>minProfit)
       {
          trade.PositionClose(positionInfo.Ticket());
+      }
+      else if(positionInfo.Time()==iTime(Symbol(),PERIOD_M1,0))//is position has opend in current candle
+      {
+         if(positionInfo.PositionType()==POSITION_TYPE_BUY&&jr.IsDownCandle(rm.M1Prices[0]))
+         {
+            trade.PositionClose(positionInfo.Ticket());
+         }
+         else if(positionInfo.PositionType()==POSITION_TYPE_SELL&&jr.IsUpCandle(rm.M1Prices[0]))
+         {
+            trade.PositionClose(positionInfo.Ticket());
+         }
+      }
+      else if(positionInfo.Time()==iTime(Symbol(),PERIOD_M1,1))//is position has opend in current candle
+      {
+         if(positionInfo.PositionType()==POSITION_TYPE_BUY&&jr.IsDownCandle(rm.M1Prices[1]))
+         {
+            trade.PositionClose(positionInfo.Ticket());
+         }
+         else if(positionInfo.PositionType()==POSITION_TYPE_SELL&&jr.IsUpCandle(rm.M1Prices[1]))
+         {
+            trade.PositionClose(positionInfo.Ticket());
+         }
       }
    }
 }
