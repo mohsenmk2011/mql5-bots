@@ -42,7 +42,8 @@ double LineManager::angle(MqlRates& rates[],double& maBuffer[])
    double adjacent=sqrt((int)rates[0].time-(int)rates[6].time);
    double opposite=(maBuffer[0]-maBuffer[6])/_Point;
    double angle=MathArctan((double)opposite/(double)adjacent) * 180/M_PI;
-   return angle;
+   double normalangle= NormalizeDouble(angle,2);
+   return normalangle;
 }
 
 //+------------------------------------------------------------------+
@@ -64,7 +65,9 @@ double LineManager::angleAverage(MqlRates& rates[],double& maBuffer[])
    double angle3=MathArctan((double)opposite3/(double)adjacent3) * 180/M_PI;
 
    double av=(angle1+angle1+angle1+angle2+angle2+angle3)/6;
-   return av;
+   
+   double normalangle= NormalizeDouble(av,2);
+   return normalangle;
 }
 //+------------------------------------------------------------------+
 //|                  Is MidLine Straight                             |
