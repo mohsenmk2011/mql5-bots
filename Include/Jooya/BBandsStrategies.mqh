@@ -12,4 +12,6 @@ enum BBandsStrategies {
    BBandsStrategies_Passed_OverBands,
    BBandsStrategies_SimpleMultiTimeFrame,
    BBandsStrategies_MultiTimeFrameWithAngle,
+   BBandsStrategies_SimpleMidline,
+   BBandsStrategies_MidlineMultiTimeFrame,
 };

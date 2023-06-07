@@ -24,10 +24,12 @@ BBandsManager bBandsManager;
 //====================< Bollinger bands strategy >=====================================
 input double   InpLots           = 1.0;      // Lots
 
-input bool Passed_OverBands = true; // Passed Over Bands
+input bool Passed_OverBands = false; // Passed Over Bands
 input bool Simple = false; // Simple
 input bool SimpleMultiTimeFrame = false; // Simple Multi Time Frame
 input bool MultiTimeFrameWithAngle = false; // Multi Time Frame With Angle
+input bool SimpleMidline = true; // Simple Midline
+input bool MidlineMultiTimeFrame = false; // Midline Multi Time Frame
 // Add more input variables for additional strategies
 
 //+------------------------------------------------------------------+
@@ -55,12 +57,14 @@ void OnDeinit(const int reason)
 void OnTick()
 {
    //bBandsManager.currentStrategy = BBandsStrategies_Passed_OverBands;
-   
+
    bBandsManager.use_Simple_Strategy = Simple;
    bBandsManager.use_Passed_OverBands_Strategy = Passed_OverBands;
    bBandsManager.use_SimpleMultiTimeFrame_Strategy = SimpleMultiTimeFrame;
-   bBandsManager.user_MultiTimeFrameWithAngle_Strategy = MultiTimeFrameWithAngle;
-   
+   bBandsManager.use_MultiTimeFrameWithAngle_Strategy = MultiTimeFrameWithAngle;
+   bBandsManager.use_SimpleMidline = SimpleMidline;
+   bBandsManager.use_MidlineMultiTimeFrame = MidlineMultiTimeFrame;
+
    bBandsManager.checkSignal();
    Comment(bBandsManager.comment);
 }

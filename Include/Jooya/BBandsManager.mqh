@@ -21,6 +21,7 @@
 #include <Jooya/PositionManager.mqh>
 #include <Jooya/JooyaRates.mqh>
 #include <Jooya/BBandsStrategies.mqh>
+#include <Jooya/LineManager.mqh>
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -34,6 +35,7 @@ private:
    TrailingManager   tm;
    PositionManager   pm;
    MaManager         mam;
+   LineManager lm;
    PositionInfo      positionInfo;
    SymbolInfo        symbolInfo;
    Trade             trade;
@@ -56,6 +58,8 @@ public:
    void              checkPassedOverBandsStrategy();
    void              checkMultTimeFrameStrategy();
    void              checkSimpleStrategy();
+   void checkMidlineMultiTimeFrame();
+   void checkSimpleMidline();
 
    void              drawObject();
 
@@ -64,7 +68,9 @@ public:
    bool              use_Simple_Strategy;
    bool              use_Passed_OverBands_Strategy;
    bool              use_SimpleMultiTimeFrame_Strategy;
-   bool              user_MultiTimeFrameWithAngle_Strategy;
+   bool              use_MultiTimeFrameWithAngle_Strategy;
+   bool use_SimpleMidline;
+   bool use_MidlineMultiTimeFrame;
 
    BBandsStatus      m1_Status;
    BBandsStatus      m5_Status;
@@ -287,6 +293,10 @@ void BBandsManager::checkSignal()
    rm.copyRates();
    readIndicotor();
    comment="";
+   if(symbolInfo.Spread()>2)
+   {
+      return;
+   }
    if(use_Passed_OverBands_Strategy)
    {
       updateStatus();
@@ -303,7 +313,87 @@ void BBandsManager::checkSignal()
       comment +="Strategy => MultiTimeFrame\n";
       checkMultTimeFrameStrategy();
    }
+   if(use_SimpleMidline)
+   {
+      comment +="Strategy => Simple Midline\n";
+      checkSimpleMidline();
+   }
+   if(use_MidlineMultiTimeFrame)
+   {
+      comment +="Strategy => Midline MultiTimeFrame\n";
+      checkMultTimeFrameStrategy();
+   }
+
    checkCloseCondition();
+}
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void BBandsManager::checkSimpleMidline()
+{
+//+--------------------[ bband mide line Angle ]--------------------------------+
+   double bbMidLineAngle= lm.angle(rm.M5Prices,M5MidBandArray);
+   comment+="bbMidLineAngle => "+bbMidLineAngle+"\n";
+//+--------------------------[ signals ]-------------------------+
+   if(lm.IsStraight(bbMidLineAngle))
+   {
+      comment+="bbMidLine Is Straigh,";
+      if(jr.IsPriceTouchedTop(rm.M1Prices, M1UpperBandArray))//sell and close buy positions
+      {
+         trade.PositionCloseAll(POSITION_TYPE_BUY);
+         if(positionInfo.sellCount()==0)
+         {
+            comment="Price Touched top,so sell.";
+            trade.Sell(pm.newPositionVolume(),Symbol(),symbolInfo.Ask(),pm.sellStopLoss(0.01),0,comment);
+         }
+      }
+      else if(jr.IsPriceTouchedDown(rm.M1Prices,M1LowerBandArray)) //buy and close sell positions
+      {
+         trade.PositionCloseAll(POSITION_TYPE_SELL);
+         if(positionInfo.buyCount()==0)
+         {
+            trade.Buy(pm.newPositionVolume(),Symbol(),symbolInfo.Ask(),pm.buyStopLoss(0.01),0,"bbMidLine Is Straigh,Price Touched down,so buy.");
+         }
+      }
+   }
+   else if(lm.IsGoingDown(bbMidLineAngle))
+   {
+      comment+="bbMidLine => going down \n";
+      if(jr.IsPricePassedUp(rm.M1Prices,M1MidBandArray))//close sell position
+      {
+         trade.PositionCloseAll(POSITION_TYPE_SELL);
+      }
+      else if(jr.IsPricePassedDown(rm.M1Prices,M1MidBandArray)) //open a sell position
+      {
+         if(positionInfo.sellCount()==0)
+         {
+            trade.Sell(pm.newPositionVolume(),Symbol(),symbolInfo.Bid(),pm.sellStopLoss(0.01),0,"bbMidLine Is goin down,Price passed down,so sell.");
+         }
+      }
+   }
+   else if(lm.IsGoingUp(bbMidLineAngle))
+   {
+      comment+="bbMidLine => going up \n";
+      if(jr.IsPricePassedUp(rm.M1Prices,M1MidBandArray))//open a buy position
+      {
+         if(positionInfo.buyCount()==0)
+         {
+            trade.Buy(pm.newPositionVolume(),Symbol(),symbolInfo.Ask(),pm.buyStopLoss(0.01),0,"bbMidLine Is goin up,Price passed up,so buy.");
+         }
+      }
+      else if(jr.IsPricePassedDown(rm.M1Prices,M1MidBandArray)) //close buy position
+      {
+         trade.PositionCloseAll(POSITION_TYPE_BUY);
+      }
+   }
+   Comment(this.comment+tm.comment);
+}
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void BBandsManager::checkMidlineMultiTimeFrame()
+{
+
 }
 //+------------------------------------------------------------------+
 //|          will check passed over bands strategy                   |
@@ -445,32 +535,36 @@ void BBandsManager::checkCloseCondition()
    for(int i=0; i<count; i++)
    {
       positionInfo.SelectByIndex(i);
-      if(positionInfo.Profit()>minProfit)
+      if(positionInfo.Profit()<=-30)
       {
          trade.PositionClose(positionInfo.Ticket());
       }
-      else if(positionInfo.Time()==iTime(Symbol(),PERIOD_M1,0))//is position has opend in current candle
-      {
-         if(positionInfo.PositionType()==POSITION_TYPE_BUY&&jr.IsDownCandle(rm.M1Prices[0]))
-         {
-            trade.PositionClose(positionInfo.Ticket());
-         }
-         else if(positionInfo.PositionType()==POSITION_TYPE_SELL&&jr.IsUpCandle(rm.M1Prices[0]))
-         {
-            trade.PositionClose(positionInfo.Ticket());
-         }
-      }
-      else if(positionInfo.Time()==iTime(Symbol(),PERIOD_M1,1))//is position has opend in current candle
-      {
-         if(positionInfo.PositionType()==POSITION_TYPE_BUY&&jr.IsDownCandle(rm.M1Prices[1]))
-         {
-            trade.PositionClose(positionInfo.Ticket());
-         }
-         else if(positionInfo.PositionType()==POSITION_TYPE_SELL&&jr.IsUpCandle(rm.M1Prices[1]))
-         {
-            trade.PositionClose(positionInfo.Ticket());
-         }
-      }
+      //if(positionInfo.Profit()>minProfit)
+      //{
+      //   trade.PositionClose(positionInfo.Ticket());
+      //}
+      //else if(positionInfo.Time()==iTime(Symbol(),PERIOD_M1,0))//is position has opend in current candle
+      //{
+      //   if(positionInfo.PositionType()==POSITION_TYPE_BUY&&jr.IsDownCandle(rm.M1Prices[0]))
+      //   {
+      //      trade.PositionClose(positionInfo.Ticket());
+      //   }
+      //   else if(positionInfo.PositionType()==POSITION_TYPE_SELL&&jr.IsUpCandle(rm.M1Prices[0]))
+      //   {
+      //      trade.PositionClose(positionInfo.Ticket());
+      //   }
+      //}
+      //else if(positionInfo.Time()==iTime(Symbol(),PERIOD_M1,1))//is position has opend in current candle
+      //{
+      //   if(positionInfo.PositionType()==POSITION_TYPE_BUY&&jr.IsDownCandle(rm.M1Prices[1]))
+      //   {
+      //      trade.PositionClose(positionInfo.Ticket());
+      //   }
+      //   else if(positionInfo.PositionType()==POSITION_TYPE_SELL&&jr.IsUpCandle(rm.M1Prices[1]))
+      //   {
+      //      trade.PositionClose(positionInfo.Ticket());
+      //   }
+      //}
    }
 }
 
