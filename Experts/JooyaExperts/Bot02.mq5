@@ -14,14 +14,12 @@
 #include <Jooya/StochTrailingStopPC.mqh>
 #include <Jooya/BBandsStrategy.mqh>
 #include <Jooya/BBandsMidLineBreakout.mqh>
-#include <Jooya/BBandsMidLine.mqh>
 #include <Jooya/BBandsMidLine02.mqh>
 #include <Jooya/BBandsMidLineComplex.mqh>
 #include <Jooya/BBandsMidLineTfComplex02.mqh>
 #include <Jooya/BBandsMidLineComplex03.mqh>
 #include <Jooya/bbAtHighLow.mqh>
 #include <Jooya/BBandsTradeMaxs.mqh>
-#include <Jooya/BBandsMaAngle.mqh>
 #include <Jooya/BBStochStrategy.mqh>
 #property copyright "Copyright 2021, Jooya Software Corp."
 #property link      "https://www.mql5.com"
@@ -43,14 +41,12 @@ StochTrailingStopPC stochTpc;
 //====================< Bollinger bands strategy >=====================================
 BBandsStrategy bbs;
 BBandsMidLineBreakout bbsBreakout;
-BBandsMidLine bbmid;
 BBandsMidLine02 bbmid2;
 BBandsMidLineComplex bbmidComplex;
 BBandsMidLineTfComplex02 bbmidComplex02;
 BBandsMidLineComplex03 bbmidComplex03;
 BBAtHighLow bbhl;
 BBandsTradeMaxs bbtm;
-BBandsMaAngle bbMaAngle;
 BBStochStrategy bbStoch;
 //====================< Bollinger bands strategy >=====================================
 input double   InpLots           = 1.0;      // Lots
@@ -78,7 +74,7 @@ void OnTick()
 //mas.Run();
 //mas3.Run();
 //rsis.Run();
-//cs.Run();
+cs.Run();
 //cs.CommentPirceInfo();
 //cs.TickVolumeLabel();
 //cs.PrintTicks();
@@ -88,7 +84,7 @@ void OnTick()
 //stochCtfs.Run();
 ///stochTpc.Run();
 
-bbs.Run();
+//bbs.Run();
 //bbmid.Run();
 //bbsBreakout.Run();/////////////////
 //bbmid2.Run();

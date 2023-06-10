@@ -9,6 +9,7 @@
 #include <Trade/SymbolInfo.mqh>
 #include <Trade/DealInfo.mqh>
 #include <Jooya/MaManager.mqh>
+#include <Jooya/LineManager.mqh>
 
 #property copyright "Copyright 2022, MetaQuotes Ltd."
 #property link      "https://www.mql5.com"
@@ -32,6 +33,7 @@ private:
    TrailingManager   tm;
    PositionManager   pm;
    MaManager         mam;
+   LineManager lm;
    string            comment;
    int conditions[5];
 
@@ -358,26 +360,26 @@ void BBandsMidLineBreakout::Run()
    CopyBuffer(h4BBHandl,1,0,10,h4UpperBandArray);
    CopyBuffer(h4BBHandl,2,0,10,h4LlowerBandArray);
    //+--------------------[ M1 bband mide line Angle ]--------------------------------+
-   double M1BBMidLineAngle= NormalizeDouble(mam.angle(M1Prices,M1MidBandArray),2);
+   double M1BBMidLineAngle= lm.angle(M1Prices,M1MidBandArray);
    comment+="M1 BBMidLineAngle => "+M1BBMidLineAngle+"\n";
    //+--------------------[ M5 bband mide line Angle ]--------------------------------+
-   double M5BBMidLineAngle= NormalizeDouble(mam.angle(M5Prices,M5MidBandArray),2);
+   double M5BBMidLineAngle= lm.angle(M5Prices,M5MidBandArray);
    comment+="M5 BBMidLineAngle => "+M5BBMidLineAngle+"\n";
    //+--------------------[ M15 bband mide line Angle ]--------------------------------+
-   double M15BBMidLineAngle= NormalizeDouble(mam.angle(M15Prices,M15MidBandArray),2);
+   double M15BBMidLineAngle= lm.angle(M15Prices,M15MidBandArray);
    comment+="M15 BBMidLineAngle => "+M15BBMidLineAngle+"\n";
    //+--------------------[ M30 bband mide line Angle ]--------------------------------+
-   double M30BBMidLineAngle= NormalizeDouble(mam.angle(M30Prices,M30MidBandArray),2);
+   double M30BBMidLineAngle= lm.angle(M30Prices,M30MidBandArray);
    comment+="M30 BBMidLineAngle => "+M30BBMidLineAngle+"\n";
 //+--------------------[ H1 bband mide line Angle ]--------------------------------+
-   h1BBUpperLineAngle= NormalizeDouble(mam.angleAverage(H1Prices,h1UpperBandArray),2);
+   h1BBUpperLineAngle= lm.angleAverage(H1Prices,h1UpperBandArray);
    comment+="h1 h1BBUpperLineAngle => "+h1BBUpperLineAngle+"\n";
-   h1BBMidLineAngle= NormalizeDouble(mam.angleAverage(H1Prices,h1MidBandArray),2);
+   h1BBMidLineAngle= lm.angleAverage(H1Prices,h1MidBandArray);
    comment+="h1 BBMidLineAngle => "+h1BBMidLineAngle+"\n";
-   h1BBLowerLineAngle= NormalizeDouble(mam.angleAverage(H1Prices,h1LowerBandArray),2);
+   h1BBLowerLineAngle= lm.angleAverage(H1Prices,h1LowerBandArray);
    comment+="h1 h1BBLowerLineAngle => "+h1BBLowerLineAngle+"\n";
 //+--------------------[ H4 bband mide line Angle ]--------------------------------+
-   double h4BBMidLineAngle= NormalizeDouble(mam.angle(H4Prices,h4MidBandArray),2);
+   double h4BBMidLineAngle= lm.angle(H4Prices,h4MidBandArray);
    comment+="h4 BBMidLineAngle => "+h4BBMidLineAngle+"\n";
 //+--------------------[  bbands height ]--------------------------------+
    double M1BBandsHeight= (M1UpperBandArray[0]-M1LowerBandArray[0])*(1/Point());

@@ -12,6 +12,7 @@
 #include <Trade/SymbolInfo.mqh>
 #include <Trade/DealInfo.mqh>
 #include <Jooya/MaManager.mqh>
+#include <Jooya/LineManager.mqh>
 
 #property copyright "Copyright 2022, MetaQuotes Ltd."
 #property link      "https://www.mql5.com"
@@ -35,6 +36,7 @@ private:
    TrailingManager   tm;
    PositionManager   pm;
    MaManager         mam;
+   LineManager lm;
    string            comment;
 
    bool              IsMidLineStraight(double midLine);
@@ -113,10 +115,10 @@ void BBandsMidLineComplex03::Run()
    CopyBuffer(h4BBHandl,1,0,10,h4UpperBandArray);
    CopyBuffer(h4BBHandl,2,0,10,h4LlowerBandArray);
 //+--------------------[ H1 bband mide line Angle ]--------------------------------+
-   double h1BBMidLineAngle= NormalizeDouble(mam.angle(H1Prices,h1MidBandArray),2);
+   double h1BBMidLineAngle= lm.angle(H1Prices,h1MidBandArray);
    comment+="h1BBMidLineAngle => "+h1BBMidLineAngle+"\n";
 //+--------------------[ H4 bband mide line Angle ]--------------------------------+
-   double h4BBMidLineAngle= NormalizeDouble(mam.angle(H4Prices,h4MidBandArray),2);
+   double h4BBMidLineAngle= lm.angle(H4Prices,h4MidBandArray);
    comment+="h4BBMidLineAngle => "+h4BBMidLineAngle+"\n";
 //+--------------------------[ signals ]-------------------------+
    if(IsMidLineGoingDown(h4BBMidLineAngle)&&IsMidLineGoingDown(h1BBMidLineAngle)&&H1Prices[0].close<h1MidBandArray[0])

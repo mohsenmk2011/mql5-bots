@@ -11,6 +11,7 @@
 #include <Trade/SymbolInfo.mqh>
 #include <Trade/DealInfo.mqh>
 #include <Jooya/MaManager.mqh>
+#include <Jooya/LineManager.mqh>
 
 #property copyright "Copyright 2022, MetaQuotes Ltd."
 #property link      "https://www.mql5.com"
@@ -34,6 +35,7 @@ private:
    TrailingManager   tm;
    PositionManager   pm;
    MaManager         mam;
+   LineManager lm;
    string            comment;
    string            positionComment;
 
@@ -97,7 +99,7 @@ void BBandsTradeMaxs::Run()
    CopyBuffer(bbHandl,1,0,10,upperBandArray);
    CopyBuffer(bbHandl,2,0,10,lowerBandArray);
 //+--------------------[ bband mide line Angle ]--------------------------------+
-   double bbMidLineAngle= NormalizeDouble(mam.angle(Prices,midBandArray),2);
+   double bbMidLineAngle= lm.angle(Prices,midBandArray);
    comment+="bbMidLineAngle => "+bbMidLineAngle+"\n";
 //+--------------------------[ atr indicator ]-------------------------+
    int atrHandle=iATR(Symbol(),Period(),14);
