@@ -13,6 +13,17 @@
 #property indicator_plots 1
 // one indicator's buffers
 #property indicator_buffers 1
+//------------------------------------------
+// set drawing type line,candle 
+#property indicator_type1 DRAW_LINE
+// set drawing color
+#property indicator_color1 clrGreen
+// set drawing style of  line
+#property indicator_style1 STYLE_SOLID
+// set the line width
+#property indicator_width1  2
+// set the label of this line
+#property indicator_label1 "Ma Distance"
 //+------------------------------------------------------------------+
 //| Custom indicator initialization function                         |
 //+------------------------------------------------------------------+
