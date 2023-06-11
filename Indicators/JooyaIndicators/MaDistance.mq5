@@ -14,7 +14,7 @@
 // one indicator's buffers
 #property indicator_buffers 1
 //------------------------------------------
-// set drawing type line,candle 
+// set drawing type line,candle
 #property indicator_type1 DRAW_LINE
 // set drawing color
 #property indicator_color1 clrGreen
@@ -24,14 +24,22 @@
 #property indicator_width1  2
 // set the label of this line
 #property indicator_label1 "Ma Distance"
+//-----------------[ set input of indicator ]-------------------------
+input color LineColor = clrGreen; // Line Color
+//-----------------[ set buffers ]-------------------------
+double DistanceBuffer[];
+
 //+------------------------------------------------------------------+
 //| Custom indicator initialization function                         |
 //+------------------------------------------------------------------+
 int OnInit()
   {
-//--- indicator buffers mapping
-   
-//---
+// indicator buffers mapping
+
+// the Distanc Buffer is an indicator buffer
+   SetIndexBuffer(0,DistanceBuffer,INDICATOR_DATA);
+// setting EMPTY_VALUE for Distance line
+   PlotIndexSetDouble(0,PLOT_EMPTY_VALUE,0);
    return(INIT_SUCCEEDED);
   }
 //+------------------------------------------------------------------+
@@ -49,7 +57,7 @@ int OnCalculate(const int rates_total,
                 const int &spread[])
   {
 //---
-   
+
 //--- return value of prev_calculated for next call
    return(rates_total);
   }
