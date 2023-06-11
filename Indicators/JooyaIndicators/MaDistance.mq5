@@ -11,6 +11,8 @@
 #property indicator_separate_window
 // one graphic plots are used: for display distace of two ma
 #property indicator_plots 1
+// one indicator's buffers
+#property indicator_buffers 1
 //+------------------------------------------------------------------+
 //| Custom indicator initialization function                         |
 //+------------------------------------------------------------------+
