@@ -26,14 +26,46 @@
 #property indicator_label1 "Ma Distance"
 //-----------------[ set input of indicator ]-------------------------
 input color LineColor = clrGreen; // Line Color
+
+input int FMA_Period = 54;  // Fast Moving Average period
+input ENUM_MA_METHOD FMA_Method = MODE_SMA;  // Fast Moving Average method
+input ENUM_APPLIED_PRICE FMA_Price = PRICE_CLOSE;  // Fast Moving Average price type
+
+input int SMA_Period = 270;  // Slow Moving Average period
+input ENUM_MA_METHOD SMA_Method = MODE_SMA;  // Slow Moving Average method
+input ENUM_APPLIED_PRICE SMA_Price = PRICE_CLOSE;  // Slow Moving Average price type
+
 //-----------------[ set buffers ]-------------------------
 double DistanceBuffer[];
+
+
+double FMABuffer[];
+double SMABuffer[];
+//-----------------[ ma handles ]-------------------------
+int fmaHandle;  // Fast MA indicator handle
+int smaHandle;  // Slow MA indicator handle
+
 
 //+------------------------------------------------------------------+
 //| Custom indicator initialization function                         |
 //+------------------------------------------------------------------+
 int OnInit()
   {
+
+// Create the MA indicator
+   fmaHandle = iMA(_Symbol, _Period, FMA_Period, 0, FMA_Method, FMA_Price);
+   if(fmaHandle == INVALID_HANDLE)
+     {
+      Print("Failed to create the Fast MA indicator!");
+      return INIT_FAILED;
+     }
+   smaHandle = iMA(_Symbol, _Period, SMA_Period, 0, SMA_Method, SMA_Price);
+   if(smaHandle == INVALID_HANDLE)
+     {
+      Print("Failed to create the Slow MA indicator!");
+      return INIT_FAILED;
+     }
+
 // indicator buffers mapping
 
 // the Distanc Buffer is an indicator buffer
@@ -57,8 +89,34 @@ int OnCalculate(const int rates_total,
                 const int &spread[])
   {
 //---
-
+   CalculateMAs();
 //--- return value of prev_calculated for next call
    return(rates_total);
+  }
+//+------------------------------------------------------------------+
+
+// Calculate the MA indicator values
+void CalculateMAs()
+  {
+   ArraySetAsSeries(FMABuffer, true);
+   int copied = CopyBuffer(fmaHandle, 0, 0, Bars(Symbol(),Period()), FMABuffer);
+
+   if(copied <= 0)
+     {
+      Print("Failed to copy MA values!");
+      return;
+     }
+
+   ArraySetAsSeries(SMABuffer, true);
+   copied = CopyBuffer(smaHandle, 0, 0, Bars(Symbol(),Period()), SMABuffer);
+
+   if(copied <= 0)
+     {
+      Print("Failed to copy MA values!");
+      return;
+     }
+
+// Use the MA values for further calculations
+// ...
   }
 //+------------------------------------------------------------------+
