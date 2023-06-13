@@ -73,6 +73,10 @@ class DonchainChannelManager {
    DonchainChannelManager();
    ~DonchainChannelManager();
    void readIndicator();
+   //checks the buy and sell signals and will open new positions based on signal
+   void              checkSignal();
+   //checks all positions and will close each positon that should be close based on strategy
+   void              checkCloseCondition();
 };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -89,9 +93,9 @@ DonchainChannelManager::~DonchainChannelManager() {
 }
 //+------------------------------------------------------------------+
 void DonchainChannelManager::readIndicator() {
-   ArraySetAsSeries(M1MidArray,true);
-   ArraySetAsSeries(M1UpperArray,true);
-   ArraySetAsSeries(M1LowerArray,true);
+   //ArraySetAsSeries(M1MidArray,true);
+   //ArraySetAsSeries(M1UpperArray,true);
+   //ArraySetAsSeries(M1LowerArray,true);
 
    int M1Handl = iCustom(Symbol(),PERIOD_M1,"JooyaIndicators\\donchian_channels.ex5");
 
@@ -100,9 +104,9 @@ void DonchainChannelManager::readIndicator() {
    CopyBuffer(M1Handl,2,0,10,M1LowerArray);
 //+--------------------------[ M5 bs indicator ]-------------------------+
 
-   ArraySetAsSeries(M5MidArray,true);
-   ArraySetAsSeries(M5UpperArray,true);
-   ArraySetAsSeries(M5LowerArray,true);
+   //ArraySetAsSeries(M5MidArray,true);
+   //ArraySetAsSeries(M5UpperArray,true);
+   //ArraySetAsSeries(M5LowerArray,true);
 
    int M5Handl = iCustom(Symbol(),PERIOD_M5,"JooyaIndicators\\donchian_channels.ex5");
 
@@ -111,9 +115,9 @@ void DonchainChannelManager::readIndicator() {
    CopyBuffer(M5Handl,2,0,10,M5LowerArray);
 //+--------------------------[ M15 bs indicator ]-------------------------+
 
-   ArraySetAsSeries(M15MidArray,true);
-   ArraySetAsSeries(M15UpperArray,true);
-   ArraySetAsSeries(M15LowerArray,true);
+   //ArraySetAsSeries(M15MidArray,true);
+   //ArraySetAsSeries(M15UpperArray,true);
+   //ArraySetAsSeries(M15LowerArray,true);
 
    int M15Handl = iCustom(Symbol(),PERIOD_M15,"JooyaIndicators\\donchian_channels.ex5");
 
@@ -121,9 +125,9 @@ void DonchainChannelManager::readIndicator() {
    CopyBuffer(M15Handl,1,0,10,M15MidArray);
    CopyBuffer(M15Handl,2,0,10,M15LowerArray);
 //+--------------------------[ M30 bs indicator ]-------------------------+
-   ArraySetAsSeries(M30MidArray,true);
-   ArraySetAsSeries(M30UpperArray,true);
-   ArraySetAsSeries(M30LowerArray,true);
+   //ArraySetAsSeries(M30MidArray,true);
+   //ArraySetAsSeries(M30UpperArray,true);
+   //ArraySetAsSeries(M30LowerArray,true);
 
    int M30Handl = iCustom(Symbol(),PERIOD_M30,"JooyaIndicators\\donchian_channels.ex5");
 
@@ -132,9 +136,9 @@ void DonchainChannelManager::readIndicator() {
    CopyBuffer(M30Handl,2,0,10,M30LowerArray);
 //+--------------------------[ H1 bs indicator ]-------------------------+
 
-   ArraySetAsSeries(h1MidArray,true);
-   ArraySetAsSeries(h1UpperArray,true);
-   ArraySetAsSeries(h1LowerArray,true);
+   //ArraySetAsSeries(h1MidArray,true);
+   //ArraySetAsSeries(h1UpperArray,true);
+   //ArraySetAsSeries(h1LowerArray,true);
 
    int h1Handl = iCustom(Symbol(),PERIOD_H1,"JooyaIndicators\\donchian_channels.ex5");
 
@@ -143,9 +147,9 @@ void DonchainChannelManager::readIndicator() {
    CopyBuffer(h1Handl,2,0,10,h1LowerArray);
 //+--------------------------[ H4 bs indicator ]-------------------------+
 
-   ArraySetAsSeries(h4MidArray,true);
-   ArraySetAsSeries(h4UpperArray,true);
-   ArraySetAsSeries(h4LowerArray,true);
+   //ArraySetAsSeries(h4MidArray,true);
+   //ArraySetAsSeries(h4UpperArray,true);
+   //ArraySetAsSeries(h4LowerArray,true);
 
    int h4Handl = iCustom(Symbol(),PERIOD_H4,"JooyaIndicators\\donchian_channels.ex5");
 
@@ -156,5 +160,27 @@ void DonchainChannelManager::readIndicator() {
    logm.set("h1 mid",h1MidArray[0]);
    logm.set("h1 lower",h1LowerArray[0]);
    logm.comment();
+}
+//+------------------------------------------------------------------+
+
+//checks the buy and sell signals and will open new positions based on signal
+void DonchainChannelManager::checkSignal() {
+   rm.copyRates();
+   readIndicator();
+   if(symbolInfo.Spread()>2) {
+      return;
+   }
+   //double bid = symbolInfo.Bid();
+   if(rm.H1Prices[0].close>=h1UpperArray[0]) {
+      Print("buy signal");
+      trade.Buy(pm.newPositionVolume(),Symbol(),symbolInfo.Ask(),pm.buyStopLoss(0.01),0,"bid is bigger than upper line so buy");
+   } else if(rm.H1Prices[0].close<=h1LowerArray[0]) {
+      Print("sell signal");
+      trade.Sell(pm.newPositionVolume(),Symbol(),symbolInfo.Ask(),pm.sellStopLoss(0.01),0,"bid is smaller than lower line so sell");
+   }
+}
+//checks all positions and will close each positon that should be close based on strategy
+void DonchainChannelManager::checkCloseCondition() {
+
 }
 //+------------------------------------------------------------------+
