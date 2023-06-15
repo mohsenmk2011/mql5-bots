@@ -21,6 +21,14 @@ public:
    bool              IsStraight(double midLine);
    bool              IsGoingDown(double midLine);
    bool              IsGoingUp(double midLine);
+
+   /// first has gone top of two
+   bool              CrossOver(double& first[],double& two[]);
+   bool              PassedMinDistance(double& first[],double& second[],double minDistance);
+   /// first is smaller than two
+   bool              SmallerThan(double& first[],double& two[]);
+   bool              BiggerThan(double& first[],double& two[]);
+   double            Distance(double first,double two);
 };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -65,7 +73,7 @@ double LineManager::angleAverage(MqlRates& rates[],double& maBuffer[])
    double angle3=MathArctan((double)opposite3/(double)adjacent3) * 180/M_PI;
 
    double av=(angle1+angle1+angle1+angle2+angle2+angle3)/6;
-   
+
    double normalangle= NormalizeDouble(av,2);
    return normalangle;
 }
@@ -89,5 +97,60 @@ bool LineManager::IsGoingDown(double angle)
 bool LineManager::IsGoingUp(double angle)
 {
    return angle>=11.25;
+}
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+bool LineManager::CrossOver(double& first[],double& two[])
+{
+   if(first[1]<two[1]&&first[0]>two[0])
+   {
+      return true;
+   }
+   return false;
+}
+
+//===========================================================================
+bool LineManager::PassedMinDistance(double& first[],double& second[],double minDistance)
+{
+   if(first[1]>=second[1]&&first[0]>second[0]&&Distance(first[0],second[0])>minDistance)
+   {
+      return true;
+   }
+   return false;
+}
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+bool LineManager::SmallerThan(double& first[],double& two[])
+{
+   if(first[0]<two[0]&&first[1]<two[1])
+   {
+      return true;
+   }
+   return false;
+}
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+bool LineManager::BiggerThan(double& first[],double& two[])
+{
+   if(first[0]>two[0]&&first[1]>two[1])
+   {
+      return true;
+   }
+   return false;
+}
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+double LineManager::Distance(double first,double two)
+{
+   double t=first-two;
+   if(t<0)
+   {
+      return -t;
+   }
+   return t;
 }
 //+------------------------------------------------------------------+
