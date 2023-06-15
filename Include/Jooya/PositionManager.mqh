@@ -10,6 +10,7 @@
 #include <Jooya/SymbolInfo.mqh>
 #include <Trade/AccountInfo.mqh>
 #include <Jooya/PositionInfo.mqh>
+#include <Jooya/Trade.mqh>
 
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -21,6 +22,7 @@ private:
    SymbolInfo        si;
    PositionInfo      pi;
    double            slByAccountFraction(double fraction);
+   Trade             trade;
 
 public:
    PositionManager();
@@ -108,16 +110,16 @@ double PositionManager::slByAccountFraction(double fraction)
 //+------------------------------------------------------------------+
 bool PositionManager::ClosePositiveTrades(double minProfit)
 {
-   int count=positionInfo.count();
-   positionInfo.SelectFirst();
+   int count=pi.count();
    for(int i=0; i<count; i++)
    {
-      if(positionInfo.Profit()>minProfit)
+      pi.SelectByIndex(i);
+      if(pi.Profit()>minProfit)
       {
-         trade.PositionClose(positionInfo.Ticket());
-         positionInfo.Next();
+         trade.PositionClose(pi.Ticket());
+         pi.Next();
       }
    }
-   return positionInfo.count()>0;
+   return pi.count()>0;
 }
 //+------------------------------------------------------------------+
