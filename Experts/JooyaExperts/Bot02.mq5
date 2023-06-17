@@ -9,9 +9,7 @@
 #include <Jooya/CandleStrategy.mqh>
 #include <Jooya/JooyaHedgingStrategy.mqh>
 #include <Jooya/HedStochMaRsiStrategy04.mqh>
-#include <Jooya/StochWithTrailingStop.mqh>
 #include <Jooya/StochCombinationOfTfs.mqh>
-#include <Jooya/StochTrailingStopPC.mqh>
 #include <Jooya/BBandsStrategy.mqh>
 #include <Jooya/BBandsMidLineBreakout.mqh>
 #include <Jooya/BBandsMidLine02.mqh>
@@ -35,9 +33,7 @@ RsiStrategy01 rsis;
 CandleStrategy cs;
 JooyaHedgingStrategy hs;
 HedStochMaRsiStrategy hsma;
-StochWithTrailingStop stoch;
 StochCombinationOfTfs stochCtfs;
-StochTrailingStopPC stochTpc;
 //====================< Bollinger bands strategy >=====================================
 BBandsStrategy bbs;
 BBandsMidLineBreakout bbsBreakout;
@@ -80,9 +76,7 @@ cs.Run();
 //cs.PrintTicks();
 //hs.Run();
 //hsma.Run();
-//stoch.Run();
 //stochCtfs.Run();
-///stochTpc.Run();
 
 //bbs.Run();
 //bbmid.Run();
