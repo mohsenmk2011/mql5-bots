@@ -27,8 +27,8 @@
 class Strategy
 {
 protected:
-   JooyaRates        jr;
-   RatesManager      rm;
+   JooyaRates jr;
+   RatesManager rm;
    TrailingManager   tm;
    PositionManager   pm;
    MaManager         mam;
@@ -38,22 +38,23 @@ protected:
    SymbolInfo        symbolInfo;
    Trade             trade;
    COrderInfo        orderInfo;
-   //---------------------------   
-   bool              buyLock;
-   bool              sellLock;
-   bool              canSell;
-   bool              canBuy;
+   //---------------------------
+   bool buyLock;
+   bool sellLock;
+   bool canSell;
+   bool canBuy;
 private:
 
 public:
    Strategy();
-   ~Strategy();   
+   ~Strategy();
    //checks all positions and will close each positon that should be close based on strategy
-   virtual void              checkCloseCondition();
+   virtual void checkCloseCondition();
    ///read the value of indictor in multipe time frames
-   virtual void              readIndicotor();
+   virtual void readIndicotor();
    //checks the buy and sell signals and will open new positions based on signal
-   virtual void              checkSignal();
+   virtual void checkSignal();
+   virtual void updateStatus();
 };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -80,4 +81,12 @@ void Strategy::checkCloseCondition()
    Print("Strategy::checkCloseCondition");
 }
 //+------------------------------------------------------------------+
+//+------------------------------------------------------------------+
+void Strategy::updateStatus()
+{
+   Print("Strategy::updateStatus");
+//read the rates
+   rm.copyRates();
+   readIndicotor();
+}
 //+------------------------------------------------------------------+
