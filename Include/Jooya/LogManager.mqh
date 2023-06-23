@@ -55,13 +55,13 @@ void LogManager::postionType(ENUM_POSITION_TYPE t)
 //+------------------------------------------------------------------+
 void LogManager::comment()
 {
-   int index = ArraySize(positionNames) -1;
-   if (index < 0 )
+   int count = ArraySize(positionNames);
+   if (count <= 0 )
    {
       return;
    }
    string comment = "";
-   for (int i = 0; i < index; i++)
+   for (int i = 0; i < count; i++)
    {
       if (positionNames[i] != "" && positionValues[i] != "")
       {
@@ -107,16 +107,16 @@ void LogManager::set(string name, StochStatus value)
    switch(value)
    {
    case StochStatus_DCrossedK:
-      status = "D Crossed K";
+      status = "D Crossed K -> Sell";
       break;
    case StochStatus_KCrossedD:
-      status = "K Crossed D";
+      status = "K Crossed D -> Buy";
       break;
-   case StochStatus_IsGoingDown_Signal:
-      status = "Is Going Down First Time So Sell";
+   case StochStatus_PassedDownUpperLevel:
+      status = "PassedDownUpperLevel -> Sell";
       break;
-   case StochStatus_IsGoingUp_Signal:
-      status = "Is Going Up First Time So Buy";
+   case StochStatus_PassedUpLowerLevel:
+      status = "PassedUpLowerLevel -> Buy";
       break;
    case StochStatus_IsGoingDown:
       status = "Is Going Down";
