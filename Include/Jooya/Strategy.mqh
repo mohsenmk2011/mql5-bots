@@ -55,6 +55,7 @@ public:
    //checks the buy and sell signals and will open new positions based on signal
    virtual void checkSignal();
    virtual void updateStatus();
+   bool IsOkForTrade();
 };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -88,5 +89,18 @@ void Strategy::updateStatus()
 //read the rates
    rm.copyRates();
    readIndicotor();
+}
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+bool Strategy::IsOkForTrade()
+{
+   if(symbolInfo.Spread()<=2)
+   {
+      return true;
+   }
+   return false;
 }
 //+------------------------------------------------------------------+
