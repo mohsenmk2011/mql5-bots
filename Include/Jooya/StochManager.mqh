@@ -38,10 +38,10 @@ StochManager::StochManager()
 {
    KCrossedD=false;
    DCrossedK=false;
-   logm.addNewPosition(0,"strategy => ");
-   logm.addNewPosition(1,"k => ");
-   logm.addNewPosition(2,"d => ");
-   logm.addNewPosition(3,"distance => ");
+   logm.addNewPosition("strategy => ");
+   logm.addNewPosition("k => ");
+   logm.addNewPosition("d => ");
+   logm.addNewPosition("distance => ");
 }
 //+------------------------------------------------------------------+
 //|                                                                  |
