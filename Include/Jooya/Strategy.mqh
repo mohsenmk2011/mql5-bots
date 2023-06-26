@@ -38,6 +38,8 @@ protected:
    SymbolInfo        symbolInfo;
    Trade             trade;
    COrderInfo        orderInfo;
+   bool SellIsDone;
+   bool BuyIsDone;
    //---------------------------
    bool buyLock;
    bool sellLock;
@@ -62,6 +64,8 @@ public:
 //+------------------------------------------------------------------+
 Strategy::Strategy()
 {
+   SellIsDone = false;
+   BuyIsDone = false;
 }
 //+------------------------------------------------------------------+
 //|                                                                  |
