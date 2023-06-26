@@ -45,10 +45,7 @@ void OnTick()
       if(stoch.M5Status==StochStatus_PassedDownUpperLevel)
       {
          //sell
-         if(stoch.IsOkForTrade())
-         {
-            stoch.Sell();
-         }
+         stoch.Sell();
       }
    }
    else if(stoch.H1Status==StochStatus_IsGoingUp||stoch.H1Status==StochStatus_PassedUpLowerLevel||stoch.H1Status==StochStatus_KCrossedD)
@@ -56,12 +53,29 @@ void OnTick()
       //buy
       if(stoch.M5Status==StochStatus_PassedUpLowerLevel)
       {
-         if(stoch.IsOkForTrade())
-         {
-            stoch.Buy();
-         }
+         stoch.Buy();
       }
    }
    stoch.Trail(PERIOD_M5);
+   //if(stoch.M15Status == StochStatus_PassedUpLowerLevel)
+   //{
+   //   //close sell postions
+   //}
+   //else if (stoch.M15Status == StochStatus_PassedDownUpperLevel)
+   //{
+   //   //close buy postions
+   //   pm...ClosePositiveTrades();
+   //   trade.
+   //}
+   //int minProfit = 100;
+   //int count=pi.count();
+   //for(int i=0; i<count; i++)
+   //{
+   //   positionInfo.SelectByIndex(i);
+   //   if(positionInfo.Profit()<=-30)
+   //   {
+   //      trade.PositionClose(positionInfo.Ticket());
+   //   }
+   //}
 }
 //+------------------------------------------------------------------+
