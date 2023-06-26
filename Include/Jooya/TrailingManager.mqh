@@ -11,12 +11,12 @@
 #include <Jooya/SymbolInfo.mqh>
 #include <Jooya/PositionInfo.mqh>
 #include <Jooya/PositionManager.mqh>
-
+#include <Jooya/RatesManager.mqh>
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
 class TrailingManager
-  {
+{
 private:
    CTrade            trade;
    PositionInfo      pi;
@@ -25,29 +25,30 @@ private:
    PositionManager   pm;
 
 public:
-                     TrailingManager();
-                    ~TrailingManager();
+   TrailingManager();
+   ~TrailingManager();
    void              trail(ENUM_POSITION_TYPE type);
    void              trailWithAtr();
    void              trailWithBalanceFraction(double fraction);
+   void              trailWithLowerHeighs(ENUM_TIMEFRAMES period,RatesManager& r);
    string            comment;
-  };
+};
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
 TrailingManager::TrailingManager()
-  {
+{
    comment="";
-  }
+}
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
 TrailingManager::~TrailingManager()
-  {
-  }
+{
+}
 //+------------------------------------------------------------------+
 void TrailingManager::trailWithAtr()
-  {
+{
    comment="";
    int atrHandle=iATR(Symbol(),Period(),14);
    double atrArray[];
@@ -65,7 +66,7 @@ void TrailingManager::trailWithAtr()
 //---
 
    for(int i=pi.count()-1; i>=0; i--)
-     {
+   {
       pi.SelectByIndex(i);
       string symbol = pi.Symbol();
       ulong ticket = pi.Ticket();
@@ -73,33 +74,33 @@ void TrailingManager::trailWithAtr()
       double currentPrice=pi.PriceCurrent();
 
       if(pi.isBuy())
-        {
+      {
          newSL=si.AskTick()-stoplossPoint*Point();
-        }
+      }
 
       if(pi.isSell()&&(newSL<currentSL||currentSL==0))
-        {
+      {
          newSL=si.BidTick()+stoplossPoint*Point();
-        }
+      }
 
       if(pi.isBuy()&&(newSL>currentSL||currentSL==0))
-        {
+      {
          trade.PositionModify(ticket,newSL,0);
-        }
+      }
 
       if(pi.isSell()&&(newSL<currentSL||currentSL==0))
-        {
+      {
          trade.PositionModify(ticket,newSL,0);
-        }
-     }
+      }
+   }
 
    Comment(comment);
-  }
+}
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
 void TrailingManager::trail(ENUM_POSITION_TYPE type)
-  {
+{
    MqlRates Prices[];
    datetime dt;
    ArraySetAsSeries(Prices,true);
@@ -121,19 +122,19 @@ void TrailingManager::trail(ENUM_POSITION_TYPE type)
 //double desiredSL=NormalizeDouble(ask-150*Point(),Digits());
 
    for(int i=pi.count()-1; i>=0; i--)
-     {
+   {
       pi.SelectByIndex(i);
       string symbol = pi.Symbol();
       ulong ticket = pi.Ticket();
       double currentSL=pi.StopLoss();
       double currentPrice=pi.PriceCurrent();
       if(pi.Profit()<=0)
-        {
+      {
          return;
-        }
+      }
 
       if(type==POSITION_TYPE_BUY&& pi.isBuy())
-        {
+      {
          double lastRateLow=Prices[1].low;
          trade.PositionModify(ticket,lastRateLow,0);
 
@@ -141,73 +142,101 @@ void TrailingManager::trail(ENUM_POSITION_TYPE type)
          //if(currentPrice>currentSL+10*Digits())
          //{
          //}
-        }
-      else
-         if(type==POSITION_TYPE_SELL&&pi.isSell())
-           {
-            double lastRateHigh=Prices[1].high;
-            trade.PositionModify(ticket,lastRateHigh,0);
-           }
-     }
-  }
+      }
+      else if(type==POSITION_TYPE_SELL&&pi.isSell())
+      {
+         double lastRateHigh=Prices[1].high;
+         trade.PositionModify(ticket,lastRateHigh,0);
+      }
+   }
+}
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
 void TrailingManager::trailWithBalanceFraction(double fraction)
-  {
+{
    this.comment="------[ tm ]--------\n";
    if(fraction>0.02)
-     {
+   {
       Print("max fraction is 0.02");
       return;
-     }
+   }
    if(fraction<0.001)
-     {
+   {
       Print("min fraction is 0.001");
       return;
-     }
+   }
    double newSL=0;
    for(int i=pi.count()-1; i>=0; i--)
-     {
+   {
       pi.SelectByIndex(i);
       double currentSL =pi.StopLoss();
       ulong ticket = pi.Ticket();
       if(pi.isBuy())
-        {
+      {
          newSL=pm.buyStopLoss(fraction);
          this.comment+="newSL => "+newSL+"\n";
          if(currentSL==0)
-           {
+         {
             trade.PositionModify(ticket,newSL,0);
-           }
+         }
          else
-           {
+         {
             if(newSL>currentSL)
-              {
+            {
                trade.PositionModify(ticket,newSL,0);
-              }
-           }
-        }
-      else
-         if(pi.isSell())
-           {
-            newSL=pm.sellStopLoss(fraction);
-            if(currentSL==0)
-              {
+            }
+         }
+      }
+      else if(pi.isSell())
+      {
+         newSL=pm.sellStopLoss(fraction);
+         if(currentSL==0)
+         {
+            trade.PositionModify(ticket,newSL,0);
+         }
+         else
+         {
+            if(newSL<currentSL)
+            {
                trade.PositionModify(ticket,newSL,0);
-              }
-            else
-              {
-               if(newSL<currentSL)
-                 {
-                  trade.PositionModify(ticket,newSL,0);
-                 }
-              }
-           }
+            }
+         }
+      }
 
       this.comment+="newSL => "+newSL+"\n";
-     }
-  }
+   }
+}
 //+------------------------------------------------------------------+
 
+//+------------------------------------------------------------------+
+void TrailingManager::trailWithLowerHeighs(ENUM_TIMEFRAMES period,RatesManager& r)
+{
+   for(int i=pi.count()-1; i>=0; i--)
+   {
+      pi.SelectByIndex(i);
+      string symbol = pi.Symbol();
+      ulong ticket = pi.Ticket();
+      double currentSL=pi.StopLoss();
+      double currentPrice=pi.PriceCurrent();
+      double newStopLoss=0;
+      if(pi.isBuy())
+      {
+         newStopLoss=r.getHigherLow(period);
+         //double ask = NormalizeDouble(SymbolInfoDouble(Symbol(),SYMBOL_ASK),Digits());
+         //if(currentPrice>currentSL+10*Digits())
+         //{
+         //}
+      }
+      else if(pi.isSell())
+      {
+         newStopLoss=r.getLowerHigh(period);
+      }
+      if(newStopLoss == currentSL)
+      {
+         return;
+      }
+      trade.PositionModify(ticket,newStopLoss,0);
+   }
+}
 //+------------------------------------------------------------------+
