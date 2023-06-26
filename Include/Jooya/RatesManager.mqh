@@ -14,8 +14,8 @@ class RatesManager
 private:
    JooyaRates        jr;
 public:
-                     RatesManager();
-                    ~RatesManager();
+   RatesManager();
+   ~RatesManager();
    MqlRates          M1Prices[];
    MqlRates          M5Prices[];
    MqlRates          M15Prices[];
@@ -25,9 +25,10 @@ public:
    //set the time frames that should be copy
    void              setTimeframes();
    void              copyRates();
+   void getPrice(MqlRates& price[],ENUM_TIMEFRAMES period);
 
-   double             getFirstHigherHigh();
-   double             getFirstLowerLow();
+   double             getHigherLow(ENUM_TIMEFRAMES period);
+   double             getLowerHigh(ENUM_TIMEFRAMES period);
 };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -44,7 +45,6 @@ RatesManager::~RatesManager()
 //+------------------------------------------------------------------
 void RatesManager::setTimeframes()
 {
-   Print("is setting time frames that should be copy");
 }
 
 //+------------------------------------------------------------------+
@@ -52,8 +52,6 @@ void RatesManager::setTimeframes()
 //+------------------------------------------------------------------+
 void RatesManager::copyRates()
 {
-   Print("is setting time frames that should be copy");
-
 //+----------------------------[ M1 copy rates ]-----------------------------+
    ArraySetAsSeries(M1Prices,true);
    CopyRates(Symbol(),PERIOD_M1,0,10,M1Prices);
@@ -73,41 +71,87 @@ void RatesManager::copyRates()
    ArraySetAsSeries(H4Prices,true);
    CopyRates(Symbol(),PERIOD_H4,0,10,H4Prices);
 }
+//+------------------------------------------------------------------+
+//|                This method will be used in down trend
+//+------------------------------------------------------------------+
+double RatesManager::getLowerHigh(ENUM_TIMEFRAMES period)
+{
+   int index =0;
+   MqlRates price[];
+   getPrice(price,period);
+   double high = price[index].high;
+   int priceCount = ArraySize(price);
 
+   while(index+1<priceCount&& jr.IsDownCandle(price[index+1]))
+   {
+      index++;
+      if(price[index+1].high>high)
+      {
+         high = price[index].high;
+      }
+   }
+   return high;
+}
+
+//+------------------------------------------------------------------+
+//|               This method will be used in up trend
+//+------------------------------------------------------------------+
+double RatesManager::getHigherLow(ENUM_TIMEFRAMES period)
+{
+   int index =0;
+   MqlRates price[];
+   getPrice(price,period);
+   double low = price[index].low;
+   int priceCount = ArraySize(price);
+
+   while(index+1<priceCount&& jr.IsUpCandle(price[index+1]))
+   {
+      index++;
+      if(price[index+1].low<low)
+      {
+         low = price[index].low;
+      }
+   }
+   return low;
+}
 //+------------------------------------------------------------------+
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-double RatesManager::getFirstHigherHigh()
+void RatesManager::getPrice(MqlRates& price[], ENUM_TIMEFRAMES period)
 {
-   double high = -1;
-   int index =-1;
-   do
+   if(period == PERIOD_M1)
    {
-      index++;
-      if(M1Prices[index].high>high)
-      {
-         high = M1Prices[index].high;
-      }
+      ArrayResize(price,ArraySize(M1Prices));
+      ArrayCopy(price,M1Prices);
    }
-   while(jr.IsDownCandle(M1Prices[index]));
-   return high;
-}
-//+------------------------------------------------------------------+
-double RatesManager::getFirstLowerLow()
-{
-   double low = -1;
-   int index =-1;
-   do
+   else if(period == PERIOD_M5)
    {
-      index++;
-      if(M1Prices[index].low<low)
-      {
-         low = M1Prices[index].low;
-      }
+      Print("M5Prices size =>"+ArraySize(M5Prices));
+      ArrayResize(price,ArraySize(M5Prices));
+      ArrayCopy(price,M5Prices);
    }
-   while(jr.IsUpCandle(M1Prices[index]));
-   return low;
+   else if(period == PERIOD_M15)
+   {
+      ArrayResize(price,ArraySize(M15Prices));
+      ArrayCopy(price,M15Prices);
+   }
+   else if(period == PERIOD_M30)
+   {
+      ArrayResize(price,ArraySize(M30Prices));
+      ArrayCopy(price,M30Prices);
+   }
+   else if(period == PERIOD_H1)
+   {
+      ArrayResize(price,ArraySize(H1Prices));
+      ArrayCopy(price,H1Prices);
+   }
+   else if(period == PERIOD_H4)
+   {
+      ArrayResize(price,ArraySize(H4Prices));
+      ArrayCopy(price,H4Prices);
+   }
+   ArraySetAsSeries(price,true);
 }
 //+------------------------------------------------------------------+
