@@ -403,9 +403,7 @@ void BBandsManager::checkPassedOverBandsStrategy()
          bool isUpCandle = isUpCandle0&&isUpCandle1;
          if(isUpCandle)
          {
-            double sl = rm.getFirstLowerLow();
-            Print("stop loss => "+sl);
-            trade.Buy(10.0,Symbol(),symbolInfo.Ask(),sl);
+            Buy();
             buyLock=true;
             sellLock=false;
          }
@@ -430,9 +428,7 @@ void BBandsManager::checkPassedOverBandsStrategy()
          bool isDownCandle = isDownCandle0&&isDownCandle1;
          if(isDownCandle)
          {
-            double sl = rm.getFirstHigherHigh();
-            Print("stop loss => "+sl);
-            trade.Sell(10.0,Symbol(),symbolInfo.Ask(),sl);
+            Sell();
             buyLock=false;
             sellLock=true;
          }
@@ -476,9 +472,7 @@ void BBandsManager::checkSimpleStrategy()
       bool isUpCandle = isUpCandle0&&isUpCandle1;
       if(isUpCandle)
       {
-         double sl = rm.getFirstLowerLow();
-         Print("stop loss => "+sl);
-         trade.Buy(10.0,Symbol(),symbolInfo.Ask(),sl);
+         Buy();
          buyLock=true;
          sellLock=false;
          return;
@@ -502,9 +496,7 @@ void BBandsManager::checkSimpleStrategy()
       bool isDownCandle = isDownCandle0&&isDownCandle1;
       if(isDownCandle)
       {
-         double sl = rm.getFirstHigherHigh();
-         Print("stop loss => "+sl);
-         trade.Sell(10.0,Symbol(),symbolInfo.Bid(),sl);
+         Sell();
          buyLock=false;
          sellLock=true;
       }
