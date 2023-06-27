@@ -42,15 +42,13 @@ void OnTick()
 {
    bb.updateStatus();
    stoch.updateStatus();
-   if(bb.h1_Status==BBands_Status_Sell_MiddleBand&&stoch.H1Status==StochStatus_IsGoingDown)
+   if(bb.h1_Status==BBands_Status_Sell_MiddleBand && stoch.H1Status==StochStatus_IsGoingDown)
    {
-      //sell
-      trade.Sell(pm.newPositionVolume(),Symbol(),symbolInfo.Ask(),pm.sellStopLoss(0.01),0,"");
+      bb.Sell();
    }
    else if(bb.h1_Status==BBands_Status_Buy_MiddleBand&&stoch.H1Status==StochStatus_IsGoingUp)
    {
-      //buy
-      trade.Buy(pm.newPositionVolume(),Symbol(),symbolInfo.Ask(),pm.buyStopLoss(0.01),0,"");
+      bb.Buy();
    }
 }
 //+------------------------------------------------------------------+
