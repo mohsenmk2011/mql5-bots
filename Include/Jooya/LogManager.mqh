@@ -9,6 +9,7 @@
 
 #include<Jooya/StringHelper.mqh>
 #include<Jooya/StochStatus.mqh>
+#include<Jooya/RsiStatus.mqh>
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -27,6 +28,7 @@ public:
    void addNewPosition(string name);
    void set(string name, string value);
    void set(string name, StochStatus value);
+   void set(string name, RsiStatus value);
 };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -76,13 +78,14 @@ void LogManager::comment()
 void LogManager::addNewPosition(string name)
 {
    int count = ArraySize(positionNames) ;
+   Print("positionNames size => "+IntegerToString(count));
    ArrayResize(positionNames, count+1);
    ArrayResize(positionValues, count+1);
-   count = ArraySize(positionNames) ;
+   count = ArraySize(positionNames);
+   Print("positionNames size => "+IntegerToString(count));
    int index =count -1;
    positionNames[index] = name;
    positionValues[index] = "";
-   Print("array size => "+ArraySize(positionNames));
 }
 
 //+------------------------------------------------------------------+
@@ -126,6 +129,40 @@ void LogManager::set(string name, StochStatus value)
       break;
    default:
       status = "Not Crossed";
+      break;
+   }
+   set(name,status);
+}
+//+------------------------------------------------------------------+
+void LogManager::set(string name, RsiStatus value)
+{
+   string status = "";
+   //convert rsi status to string
+   switch(value)
+   {
+   case RsiStatus_PassedDownLowerLevel:
+      status = "Passed Down LowerLevel ";
+      break;
+   case RsiStatus_PassedUpLowerLevel:
+      status = "Passed Up LowerLevel";
+      break;
+   case RsiStatus_PassedDownUpperLevel:
+      status = "Passed Down UpperLevel";
+      break;
+   case RsiStatus_PassedUpUpperLevel:
+      status = "Passed Up UpperLevel";
+      break;
+   case RsiStatus_BetweenTwoLevel:
+      status = "Between TwoLevel";
+      break;
+   case RsiStatus_SmallerThanLowerLevel:
+      status = "Smaller Than LowerLevel";
+      break;
+   case RsiStatus_BiggerThanUpperLevel:
+      status = "Bigger Than UpperLevel:";
+      break;
+   default:
+      status = "Unknown";
       break;
    }
    set(name,status);
