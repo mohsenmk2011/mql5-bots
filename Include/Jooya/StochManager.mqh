@@ -17,6 +17,7 @@
 class StochManager:public Strategy
 {
 private:
+   //-------< Buffers >-----------
    double            M1KArray[];
    double            M1DArray[];
    double            M5KArray[];
@@ -31,8 +32,6 @@ private:
    double            H4DArray[];
    //Passed the Minimun Distance
    bool              PassedMinimunDistance;
-   TrailingManager   tm;
-   LineManager lm;
    double            previosAtrValue;
 
    StochStatus getStatus(double& dArray[],double& kArray[]);
@@ -214,68 +213,3 @@ StochStatus StochManager::getStatus(double& dArray[],double& kArray[])
    }
    return StochStatus_NotCrossed;
 }
-//+------------------------------------------------------------------+
-
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void StochManager::Sell()
-{
-   if(SellIsDone)
-   {
-      return;
-   }
-   if(!IsOkForTrade())
-   {
-      return;
-   }
-   //if(positionInfo.count()>1)
-   //{
-   //   trade.PositionClose(Symbol());
-   //}
-   double sl=rm.getLowerHigh(PERIOD_M5);
-   double ask = symbolInfo.Ask();
-   if(ask == sl)
-   {
-      sl = pm.stopLoss(5,POSITION_TYPE_SELL);
-   }
-   if(trade.Sell(pm.newPositionVolume(100),Symbol(),ask,sl))
-   {
-      SellIsDone = true;
-      BuyIsDone = false;
-   }
-
-}
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void StochManager::Buy()
-{
-   if(BuyIsDone)
-   {
-      return;
-   }
-   if(!IsOkForTrade())
-   {
-      return;
-   }
-   double sl=rm.getHigherLow(PERIOD_M5);
-   double ask = symbolInfo.Ask();
-   if(ask == sl)
-   {
-      sl = pm.stopLoss(5,POSITION_TYPE_BUY);
-   }
-   if(trade.Buy(pm.newPositionVolume(100),Symbol(),ask,sl))
-   {
-      BuyIsDone = true;
-      SellIsDone = false;
-   }
-}
-//+------------------------------------------------------------------+
-//|                                                                  |
-//+------------------------------------------------------------------+
-void StochManager::Trail(ENUM_TIMEFRAMES period)
-{
-   tm.trailWithLowerHeighs(period,rm);
-}
-//+------------------------------------------------------------------+

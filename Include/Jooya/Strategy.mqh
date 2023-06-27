@@ -58,6 +58,9 @@ public:
    virtual void checkSignal();
    virtual void updateStatus();
    bool IsOkForTrade();
+   void Sell();
+   void Buy();
+   void Trail(ENUM_TIMEFRAMES period);
 };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -106,5 +109,71 @@ bool Strategy::IsOkForTrade()
       return true;
    }
    return false;
+}
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void Strategy::Sell()
+{
+   if(SellIsDone)
+   {
+      return;
+   }
+   if(!IsOkForTrade())
+   {
+      return;
+   }
+   //if(positionInfo.count()>1)
+   //{
+   //   trade.PositionClose(Symbol());
+   //}
+   double sl=rm.getLowerHigh(PERIOD_M5);
+   double ask = symbolInfo.Ask();
+   if(ask == sl)
+   {
+      sl = pm.stopLoss(5,POSITION_TYPE_SELL);
+   }
+   if(trade.Sell(pm.newPositionVolume(100),Symbol(),ask,sl))
+   {
+      SellIsDone = true;
+      BuyIsDone = false;
+   }
+
+}
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void Strategy::Buy()
+{
+   if(BuyIsDone)
+   {
+      return;
+   }
+   if(!IsOkForTrade())
+   {
+      return;
+   }
+   double sl=rm.getHigherLow(PERIOD_M5);
+   double ask = symbolInfo.Ask();
+   if(ask == sl)
+   {
+      sl = pm.stopLoss(5,POSITION_TYPE_BUY);
+   }
+   if(trade.Buy(pm.newPositionVolume(100),Symbol(),ask,sl))
+   {
+      BuyIsDone = true;
+      SellIsDone = false;
+   }
+}
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void Strategy::Trail(ENUM_TIMEFRAMES period)
+{
+   tm.trailWithLowerHeighs(period,rm);
 }
 //+------------------------------------------------------------------+
