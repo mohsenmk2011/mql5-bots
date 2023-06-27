@@ -82,9 +82,9 @@ class DonchainChannelManager {
 //|                                                                  |
 //+------------------------------------------------------------------+
 DonchainChannelManager::DonchainChannelManager() {
-   logm.addNewPosition(0,"h1 upper");
-   logm.addNewPosition(1,"h1 mid");
-   logm.addNewPosition(2,"h1 lower");
+   logm.addNewPosition("h1 upper");
+   logm.addNewPosition("h1 mid");
+   logm.addNewPosition("h1 lower");
 }
 //+------------------------------------------------------------------+
 //|                                                                  |
