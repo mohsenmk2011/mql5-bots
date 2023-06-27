@@ -43,10 +43,6 @@ public:
    void checkCloseCondition() override;
    void readIndicotor() override;
    void updateStatus() override;
-
-   void Sell();
-   void Buy();
-   void Trail(ENUM_TIMEFRAMES period);
    ///------------------------------
    StochStatus M1Status;
    StochStatus M5Status;
@@ -129,37 +125,37 @@ void StochManager::readIndicotor()
 {
    ArraySetAsSeries(M1KArray,true);
    ArraySetAsSeries(M1DArray,true);
-   int M1Handle = iStochastic(Symbol(),Period(),5,3,3,MODE_SMA,STO_LOWHIGH);
+   int M1Handle = iStochastic(Symbol(),PERIOD_M1,5,3,3,MODE_SMA,STO_LOWHIGH);
    CopyBuffer(M1Handle,0,0,2,M1KArray);
    CopyBuffer(M1Handle,1,0,2,M1DArray);
 
    ArraySetAsSeries(M5KArray,true);
    ArraySetAsSeries(M5DArray,true);
-   int M5Handle = iStochastic(Symbol(),Period(),5,3,3,MODE_SMA,STO_LOWHIGH);
+   int M5Handle = iStochastic(Symbol(),PERIOD_M5,5,3,3,MODE_SMA,STO_LOWHIGH);
    CopyBuffer(M5Handle,0,0,2,M5KArray);
    CopyBuffer(M5Handle,1,0,2,M5DArray);
 
    ArraySetAsSeries(M15KArray,true);
    ArraySetAsSeries(M15DArray,true);
-   int M15Handle = iStochastic(Symbol(),Period(),5,3,3,MODE_SMA,STO_LOWHIGH);
+   int M15Handle = iStochastic(Symbol(),PERIOD_M15,5,3,3,MODE_SMA,STO_LOWHIGH);
    CopyBuffer(M15Handle,0,0,2,M15KArray);
    CopyBuffer(M15Handle,1,0,2,M15DArray);
 
    ArraySetAsSeries(M30KArray,true);
    ArraySetAsSeries(M30DArray,true);
-   int M30Handle = iStochastic(Symbol(),Period(),5,3,3,MODE_SMA,STO_LOWHIGH);
+   int M30Handle = iStochastic(Symbol(),PERIOD_M30,5,3,3,MODE_SMA,STO_LOWHIGH);
    CopyBuffer(M30Handle,0,0,2,M30KArray);
    CopyBuffer(M30Handle,1,0,2,M30DArray);
 
    ArraySetAsSeries(H1KArray,true);
    ArraySetAsSeries(H1DArray,true);
-   int H1Handle = iStochastic(Symbol(),Period(),5,3,3,MODE_SMA,STO_LOWHIGH);
+   int H1Handle = iStochastic(Symbol(),PERIOD_H1,5,3,3,MODE_SMA,STO_LOWHIGH);
    CopyBuffer(H1Handle,0,0,2,H1KArray);
    CopyBuffer(H1Handle,1,0,2,H1DArray);
 
    ArraySetAsSeries(H4KArray,true);
    ArraySetAsSeries(H4DArray,true);
-   int H4Handle = iStochastic(Symbol(),Period(),5,3,3,MODE_SMA,STO_LOWHIGH);
+   int H4Handle = iStochastic(Symbol(),PERIOD_H4,5,3,3,MODE_SMA,STO_LOWHIGH);
    CopyBuffer(H4Handle,0,0,2,H4KArray);
    CopyBuffer(H4Handle,1,0,2,H4DArray);
 }
