@@ -182,6 +182,7 @@ void BBandsManager::readIndicotor()
 void BBandsManager::updateStatus()
 {
 //read the rates
+   readIndicotor();
    rm.copyRates();
 //+--------------------[  bbands height ]--------------------------------+
 //double M1BBandsHeight= (M1UpperBandArray[0]-M1LowerBandArray[0])*(1/Point());
