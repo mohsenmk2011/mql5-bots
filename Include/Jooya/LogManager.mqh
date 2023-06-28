@@ -10,6 +10,7 @@
 #include<Jooya/StringHelper.mqh>
 #include<Jooya/StochStatus.mqh>
 #include<Jooya/RsiStatus.mqh>
+#include<Jooya/BBandsStatus.mqh>
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -29,6 +30,7 @@ public:
    void set(string name, string value);
    void set(string name, StochStatus value);
    void set(string name, RsiStatus value);
+   void set(string name, BBandsStatus value);
 };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -160,6 +162,52 @@ void LogManager::set(string name, RsiStatus value)
       break;
    case RsiStatus_BiggerThanUpperLevel:
       status = "Bigger Than UpperLevel:";
+      break;
+   default:
+      status = "Unknown";
+      break;
+   }
+   set(name,status);
+}
+//+------------------------------------------------------------------+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void LogManager::set(string name, BBandsStatus value)
+{
+   string status = "";
+   switch(value)
+   {
+   case BBands_Status_BiggerThan_UpperBand:
+      status = "BiggerThan_UpperBand";
+      break;
+   case BBands_Status_PassedDown_UpperBand:
+      status = "PassedDown_UpperBand";
+      break;
+   case BBands_Status_PassedUp_UpperBand:
+      status = "PassedUp_UpperBand";
+      break;
+   case BBands_Status_Between_Upper_MiddleBand:
+      status = "Between_Upper_MiddleBand";
+      break;
+   case BBands_Status_PassedDown_MiddleBand:
+      status = "PassedDown_MiddleBand";
+      break;
+   case BBands_Status_PassedUp_MiddleBand:
+      status = "PassedUp_MiddleBand";
+      break;
+   case BBands_Status_Between_Lower_MiddleBand:
+      status = "Between_Lower_MiddleBand";
+      break;
+   case BBands_Status_PassedDown_LowerBand:
+      status = "PassedDown_LowerBand";
+      break;
+   case BBands_Status_SmallerThan_LowerBand:
+      status = "SmallerThan_LowerBand";
+      break;
+   case BBands_Status_PassedUp_LowerBand:
+      status = "PassedUpLowerBand";
       break;
    default:
       status = "Unknown";
