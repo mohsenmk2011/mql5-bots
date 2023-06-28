@@ -5,6 +5,7 @@
 //+------------------------------------------------------------------+
 
 #include <Jooya/JooyaRates.mqh>
+#include <Jooya/PositionInfo.mqh>
 
 #property copyright "Copyright 2022, Jooya"
 #property link      "https://www.mql5.com"
@@ -13,6 +14,7 @@ class RatesManager
 {
 private:
    JooyaRates        jr;
+   PositionInfo      pi;
 public:
    RatesManager();
    ~RatesManager();
@@ -29,6 +31,9 @@ public:
 
    double             getHigherLow(ENUM_TIMEFRAMES period);
    double             getLowerHigh(ENUM_TIMEFRAMES period);
+
+   datetime getCurrentCandleTime(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
+   bool currentCandleHasAnyPosition(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
 };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -128,7 +133,7 @@ void RatesManager::getPrice(MqlRates& price[], ENUM_TIMEFRAMES period)
    }
    else if(period == PERIOD_M5)
    {
-      Print("M5Prices size =>"+ArraySize(M5Prices));
+      Print("M5Prices size =>"+IntegerToString(ArraySize(M5Prices)));
       ArrayResize(price,ArraySize(M5Prices));
       ArrayCopy(price,M5Prices);
    }
@@ -153,5 +158,38 @@ void RatesManager::getPrice(MqlRates& price[], ENUM_TIMEFRAMES period)
       ArrayCopy(price,H4Prices);
    }
    ArraySetAsSeries(price,true);
+}
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+datetime RatesManager::getCurrentCandleTime(ENUM_TIMEFRAMES period,string symbol)
+{
+   if(symbol == "current symbol")
+   {
+      symbol = Symbol();
+   }
+   return iTime(symbol,period,0);
+}
+//+------------------------------------------------------------------+
+//|              does current candle has any open position           |
+//+------------------------------------------------------------------+
+bool RatesManager::currentCandleHasAnyPosition(ENUM_TIMEFRAMES period,string symbol)
+{
+   if(symbol == "current symbol")
+   {
+      symbol = Symbol();
+   }
+   datetime dt = getCurrentCandleTime(period,symbol);
+
+   int count=pi.count();
+   for(int i=0; i<count; i++)
+   {
+      pi.SelectByIndex(i);
+      if(pi.timeOfCandle(period)==dt)
+      {
+         return true;
+      }
+   }
+   return false;
 }
 //+------------------------------------------------------------------+
