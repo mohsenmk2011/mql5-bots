@@ -61,6 +61,7 @@ public:
    void Sell(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
    void Buy(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
    void Trail(ENUM_TIMEFRAMES period);
+   void setMagicNumber(ulong number);
 };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -179,5 +180,12 @@ void Strategy::Buy(ENUM_TIMEFRAMES period,string symbol)
 void Strategy::Trail(ENUM_TIMEFRAMES period)
 {
    tm.trailWithLowerHeighs(period,rm);
+}
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void Strategy::setMagicNumber(ulong number)
+{
+   trade.SetExpertMagicNumber(number);
 }
 //+------------------------------------------------------------------+
