@@ -57,7 +57,7 @@ public:
    //checks the buy and sell signals and will open new positions based on signal
    virtual void checkSignal();
    virtual void updateStatus();
-   bool IsOkForTrade();
+   bool IsOkForTrade(int maxSpread=5);
    void Sell();
    void Buy();
    void Trail(ENUM_TIMEFRAMES period);
@@ -102,9 +102,9 @@ void Strategy::updateStatus()
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-bool Strategy::IsOkForTrade()
+bool Strategy::IsOkForTrade(int maxSpread)
 {
-   if(symbolInfo.Spread()<=2)
+   if(symbolInfo.Spread()<=maxSpread)
    {
       return true;
    }
