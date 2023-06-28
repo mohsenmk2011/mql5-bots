@@ -42,12 +42,14 @@ void OnTick()
 {
    bb.updateStatus();
    stoch.updateStatus();
-   if(bb.h1_Status==BBands_Status_Sell_MiddleBand && stoch.H1Status==StochStatus_IsGoingDown)
+   if(bb.h1_Status==BBands_Status_PassedDown_UpperBand && stoch.H1Status==StochStatus_IsGoingDown)
    {
+      Print("bb passed down upper band,stoch is going down => sell");
       bb.Sell();
    }
-   else if(bb.h1_Status==BBands_Status_Buy_MiddleBand&&stoch.H1Status==StochStatus_IsGoingUp)
+   else if(bb.h1_Status==BBands_Status_PassedUp_LowerBand && stoch.H1Status==StochStatus_IsGoingUp)
    {
+      Print("bb passed up lower band,stoch is going up => buy");
       bb.Buy();
    }
 }

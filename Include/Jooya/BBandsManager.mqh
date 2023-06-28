@@ -99,6 +99,8 @@ BBandsManager::BBandsManager()
 
    currentStrategy = BBandsStrategies_Unkown;
 
+   logm.addNewPosition("bb H1=> ");
+
 }
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -197,12 +199,8 @@ void BBandsManager::updateStatus()
    m30_Status = getStatus(rm.M30Prices,M30UpperBandArray,M30MidBandArray,M30LowerBandArray);
    h1_Status = getStatus(rm.H1Prices,h1UpperBandArray,h1MidBandArray,h1LowerBandArray);
    h4_Status = getStatus(rm.H4Prices,h4UpperBandArray,h4MidBandArray,h4LowerBandArray);
-   Print("BBand Status at m1 => "+m1_Status);
-   Print("BBand Status at m5 => "+m5_Status);
-   Print("BBand Status at m15 => "+m15_Status);
-   Print("BBand Status at m30 => "+m30_Status);
-   Print("BBand Status at h1 => "+h1_Status);
-   Print("BBand Status at h4 => "+h4_Status);
+   logm.set("bb H1=> ",h1_Status);
+   logm.comment();
 //if(IsPriceTouchedTop(M1Prices,M1UpperBandArray))
 //{
 //   //sell
@@ -242,37 +240,57 @@ void BBandsManager::updateStatus()
 //+------------------------------------------------------------------+
 BBandsStatus BBandsManager::getStatus(MqlRates& price[],double& upperband[],double& midband[],double& lowerband[])
 {
-   if(price[0].close>upperband[0]&&price[1].close<upperband[1])
+   if(price[0].close>lowerband[0])
    {
-      return BBands_Status_Buy_UpperBand;
+      if(price[1].close<lowerband[1])
+      {
+         return BBands_Status_PassedUp_LowerBand;//C2
+      }
+      else if(price[0].close<=midband[0])
+      {
+         return BBands_Status_Between_Lower_MiddleBand;//C1
+      }
    }
-   else if(price[0].close>upperband[0])
+   if(price[0].close < lowerband[0])
    {
-      return BBands_Status_UpperBand;
+      if(price[1].close > lowerband[1])
+      {
+         return BBands_Status_PassedDown_LowerBand;//C3
+      }
+      else if(price[1].close < lowerband[1])
+      {
+         return BBands_Status_SmallerThan_LowerBand;//C4
+      }
    }
-   else if(price[0].close < lowerband[0]&&price[1].close > lowerband[1])
+   if(price[0].close>upperband[0])
    {
-      return BBands_Status_Sell_LowerBand;
+      if(price[1].close<upperband[1])
+      {
+         return BBands_Status_PassedUp_UpperBand;//C5
+      }
+      else if(price[1].close > upperband[1])
+      {
+         return BBands_Status_BiggerThan_UpperBand;//C6
+      }
    }
-   else if(price[0].close < lowerband[0])
+   if(price[0].close < upperband[0])
    {
-      return BBands_Status_LowerBand;
+      if(price[1].close > upperband[1])
+      {
+         return BBands_Status_PassedDown_UpperBand;//C8
+      }
+      else if(price[0].close>=midband[0])
+      {
+         return BBands_Status_Between_Upper_MiddleBand;//C7
+      }
    }
-   else if(price[1].close >= midband[1]&&price[0].close<=midband[0])
+   if(price[1].close >= midband[1]&&price[0].close<=midband[0])
    {
-      return BBands_Status_Sell_MiddleBand;
+      return BBands_Status_PassedDown_MiddleBand;
    }
-   else if(price[1].close <= midband[1]&&price[0].close>=midband[0])
+   if(price[1].close <= midband[1]&&price[0].close>=midband[0])
    {
-      return BBands_Status_Buy_MiddleBand;
-   }
-   else if(price[0].close >= lowerband[0]&&price[0].close<=midband[0])
-   {
-      return BBands_Status_Between_Lower_MiddleBand;
-   }
-   else if(price[0].close <= upperband[0]&&price[0].close>=midband[0])
-   {
-      return BBands_Status_Between_Upper_MiddleBand;
+      return BBands_Status_PassedUp_MiddleBand;
    }
    return BBands_Status_Unkown;
 }
@@ -389,7 +407,7 @@ void BBandsManager::checkMidlineMultiTimeFrame()
 void BBandsManager::checkPassedOverBandsStrategy()
 {
    comment +="h1 status=> ";
-   if(h1_Status==BBands_Status_Sell_LowerBand)
+   if(h1_Status==BBands_Status_PassedDown_LowerBand)
    {
       comment +="Passed LowerBand\n";
       canBuy=jr.IsPriceTouchedDown(rm.M1Prices,M1LowerBandArray);
@@ -414,7 +432,7 @@ void BBandsManager::checkPassedOverBandsStrategy()
          buyLock=false;
       }
    }
-   else if(h1_Status==BBands_Status_Buy_UpperBand)
+   else if(h1_Status==BBands_Status_PassedUp_UpperBand)
    {
       comment +="Passed UpperBand\n";
       canSell = jr.IsPriceTouchedTop(rm.M1Prices,M1UpperBandArray);
