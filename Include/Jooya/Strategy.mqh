@@ -58,8 +58,8 @@ public:
    virtual void checkSignal();
    virtual void updateStatus();
    bool IsOkForTrade(int maxSpread=5);
-   void Sell();
-   void Buy();
+   void Sell(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
+   void Buy(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
    void Trail(ENUM_TIMEFRAMES period);
 };
 //+------------------------------------------------------------------+
@@ -89,7 +89,6 @@ void Strategy::checkCloseCondition()
    Print("Strategy::checkCloseCondition");
 }
 //+------------------------------------------------------------------+
-//+------------------------------------------------------------------+
 void Strategy::updateStatus()
 {
    Print("Strategy::updateStatus");
@@ -97,8 +96,6 @@ void Strategy::updateStatus()
    rm.copyRates();
    readIndicotor();
 }
-//+------------------------------------------------------------------+
-
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
@@ -111,15 +108,19 @@ bool Strategy::IsOkForTrade(int maxSpread)
    return false;
 }
 //+------------------------------------------------------------------+
-
-//+------------------------------------------------------------------+
-
-//+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void Strategy::Sell()
+void Strategy::Sell(ENUM_TIMEFRAMES period,string symbol)
 {
-   if(SellIsDone)
+   if(symbol=="current symbol")
+   {
+      symbol = Symbol();
+   }
+   if(period == PERIOD_CURRENT)
+   {
+      period = Period();
+   }
+   if(rm.currentCandleHasAnyPosition(period,symbol))
    {
       return;
    }
@@ -127,10 +128,6 @@ void Strategy::Sell()
    {
       return;
    }
-   //if(positionInfo.count()>1)
-   //{
-   //   trade.PositionClose(Symbol());
-   //}
    double sl=rm.getLowerHigh(PERIOD_M5);
    double ask = symbolInfo.Ask();
    if(ask == sl)
@@ -142,14 +139,21 @@ void Strategy::Sell()
       SellIsDone = true;
       BuyIsDone = false;
    }
-
 }
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void Strategy::Buy()
+void Strategy::Buy(ENUM_TIMEFRAMES period,string symbol)
 {
-   if(BuyIsDone)
+   if(symbol=="current symbol")
+   {
+      symbol = Symbol();
+   }
+   if(period == PERIOD_CURRENT)
+   {
+      period = Period();
+   }
+   if(rm.currentCandleHasAnyPosition(period,symbol))
    {
       return;
    }
