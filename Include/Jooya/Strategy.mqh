@@ -45,6 +45,7 @@ protected:
    bool sellLock;
    bool canSell;
    bool canBuy;
+   ENUM_APPLIED_PRICE appliedPrice;
 private:
 
 public:
@@ -62,6 +63,7 @@ public:
    void Buy(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
    void Trail(ENUM_TIMEFRAMES period);
    void setMagicNumber(ulong number);
+   void setAppiedPrice(ENUM_APPLIED_PRICE ap);
 };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -187,5 +189,12 @@ void Strategy::Trail(ENUM_TIMEFRAMES period)
 void Strategy::setMagicNumber(ulong number)
 {
    trade.SetExpertMagicNumber(number);
+}
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+void Strategy::setAppiedPrice(ENUM_APPLIED_PRICE ap)
+{
+   this.appliedPrice = ap;
 }
 //+------------------------------------------------------------------+
