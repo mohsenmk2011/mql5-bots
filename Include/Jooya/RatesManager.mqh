@@ -34,6 +34,7 @@ public:
 
    datetime getCurrentCandleTime(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
    bool currentCandleHasAnyPosition(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
+   bool isNewCandle(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
 };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -189,6 +190,20 @@ bool RatesManager::currentCandleHasAnyPosition(ENUM_TIMEFRAMES period,string sym
       {
          return true;
       }
+   }
+   return false;
+}
+//+------------------------------------------------------------------+
+//|               is this candle opened recently ?                   |
+//+------------------------------------------------------------------+
+bool RatesManager::isNewCandle(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol")
+{
+   static datetime previouseTime = 0;
+   datetime currentCandleTime = getCurrentCandleTime(period,symbol);
+   if(previouseTime!=currentCandleTime)
+   {
+      previouseTime = currentCandleTime;
+      return true;
    }
    return false;
 }
