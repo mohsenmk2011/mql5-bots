@@ -22,7 +22,6 @@ private:
    SymbolInfo        si;
    PositionInfo      pi;
    double            slByAccountFraction(double fraction);
-   Trade             trade;
 
 public:
    PositionManager();
@@ -33,7 +32,6 @@ public:
    double            stopLoss(double pips,ENUM_POSITION_TYPE type);
    double            sellStopLoss(double balanceFactor);
    double            buyStopLoss(double balanceFactor);
-   bool              ClosePositiveTrades(double minProfit);
 };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -81,12 +79,12 @@ double PositionManager::stopLoss(double pips,ENUM_POSITION_TYPE type)
    double sl=0;
    if(type==POSITION_TYPE_BUY)
    {
-      sl= si.AskTick()-(pips*Point());
+      sl= si.Ask()-(pips*Point());
    }
 
    if(type==POSITION_TYPE_SELL)
    {
-      sl= si.BidTick()+(pips*Point());
+      sl= si.Bid()+(pips*Point());
    }
    return sl;
 }
@@ -108,18 +106,5 @@ double PositionManager::slByAccountFraction(double fraction)
    return z;
 }
 //+------------------------------------------------------------------+
-bool PositionManager::ClosePositiveTrades(double minProfit)
-{
-   int count=pi.count();
-   for(int i=0; i<count; i++)
-   {
-      pi.SelectByIndex(i);
-      if(pi.Profit()>minProfit)
-      {
-         trade.PositionClose(pi.Ticket());
-         pi.Next();
-      }
-   }
-   return pi.count()>0;
-}
+
 //+------------------------------------------------------------------+
