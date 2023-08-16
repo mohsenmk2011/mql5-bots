@@ -7,16 +7,17 @@
 #property link      "https://www.mql5.com"
 #property version   "1.00"
 
-#include <Jooya/Strategy.mqh>
 #include <Jooya/RsiStatus.mqh>
+#include <Jooya/RatesManager.mqh>
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-class RsiManager:public Strategy
+class RsiManager
 {
 private:
    int MagicNumber;
+   RatesManager rm;
    //-------< Buffers >-----------
    double            M1Array[];
    double            M5Array[];
@@ -36,10 +37,10 @@ private:
 public:
    RsiManager();
    ~RsiManager();
-   void checkSignal() override;
-   void checkCloseCondition() override;
-   void readIndicotor() override;
-   void updateStatus() override;
+   void checkSignal();
+   void checkCloseCondition();
+   void readIndicotor();
+   void updateStatus();
 
    ///------------------------------
    RsiStatus M1Status;

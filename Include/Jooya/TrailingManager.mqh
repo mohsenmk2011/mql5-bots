@@ -58,11 +58,11 @@ void TrailingManager::trailWithAtr()
    double stoplossPoint=atrValue*100000;
    double newSL=0;
 
-   comment+="Atr => "+atrValue+"\n";
-   comment+="si.Bid()       => "+si.BidTick()+"\n";
-   comment+="StopLoss(pips) => "+stoplossPoint+"\n";
-   comment+="position count => "+pi.count()+"\n";
-   comment+="new StopLoss   => "+newSL+"\n";
+   //comment+="Atr => "+atrValue+"\n";
+   //comment+="si.Bid()       => "+si.Bid()+"\n";
+   //comment+="StopLoss(pips) => "+stoplossPoint+"\n";
+   //comment+="position count => "+pi.count()+"\n";
+   //comment+="new StopLoss   => "+newSL+"\n";
 //---
 
    for(int i=pi.count()-1; i>=0; i--)
@@ -75,12 +75,12 @@ void TrailingManager::trailWithAtr()
 
       if(pi.isBuy())
       {
-         newSL=si.AskTick()-stoplossPoint*Point();
+         newSL=si.Ask()-stoplossPoint*Point();
       }
 
       if(pi.isSell()&&(newSL<currentSL||currentSL==0))
       {
-         newSL=si.BidTick()+stoplossPoint*Point();
+         newSL=si.Bid()+stoplossPoint*Point();
       }
 
       if(pi.isBuy()&&(newSL>currentSL||currentSL==0))
@@ -102,19 +102,18 @@ void TrailingManager::trailWithAtr()
 void TrailingManager::trail(ENUM_POSITION_TYPE type)
 {
    MqlRates Prices[];
-   datetime dt;
    ArraySetAsSeries(Prices,true);
 //int count=CopyRates(Symbol(),Period(),0,Bars(Symbol(),Period()),Prices);
    int count = CopyRates(Symbol(),Period(),0,2,Prices);
    string message="";
-   message+="Price.time=>"+Prices[0].time+"\n";
-   message+="Price.open=>"+Prices[0].open+"\n";
-   message+="Price.close=>"+Prices[0].close+"\n";
-   message+="Price.High=>"+Prices[0].high+"\n";
-   message+="Price.low=>"+Prices[0].low+"\n";
-   message+="Price.spread=>"+Prices[0].spread+"\n";
-   message+="Price.tick_volume=>"+Prices[0].tick_volume+"\n";
-   message+="Price.real_volume=>"+Prices[0].real_volume+"\n";
+   //message+="Price.time=>"+Prices[0].time+"\n";
+   //message+="Price.open=>"+Prices[0].open+"\n";
+   //message+="Price.close=>"+Prices[0].close+"\n";
+   //message+="Price.High=>"+Prices[0].high+"\n";
+   //message+="Price.low=>"+Prices[0].low+"\n";
+   //message+="Price.spread=>"+Prices[0].spread+"\n";
+   //message+="Price.tick_volume=>"+Prices[0].tick_volume+"\n";
+   //message+="Price.real_volume=>"+Prices[0].real_volume+"\n";
 
 //MqlTick last_tick;
 //SymbolInfoTick(Symbol(),last_tick);
@@ -175,7 +174,7 @@ void TrailingManager::trailWithBalanceFraction(double fraction)
       if(pi.isBuy())
       {
          newSL=pm.buyStopLoss(fraction);
-         this.comment+="newSL => "+newSL+"\n";
+         this.comment+="newSL => "+IntegerToString(newSL)+"\n";
          if(currentSL==0)
          {
             trade.PositionModify(ticket,newSL,0);
@@ -204,7 +203,7 @@ void TrailingManager::trailWithBalanceFraction(double fraction)
          }
       }
 
-      this.comment+="newSL => "+newSL+"\n";
+      this.comment+="newSL => "+IntegerToString(newSL)+"\n";
    }
 }
 //+------------------------------------------------------------------+
