@@ -12,36 +12,34 @@
 //|                                                                  |
 //+------------------------------------------------------------------+
 class SymbolInfo : public CSymbolInfo
-  {
+{
 private:
 
 public:
-                     SymbolInfo();
-                    ~SymbolInfo();
-   double            AskTick();
-   double            BidTick();
-  };
+   SymbolInfo();
+   ~SymbolInfo();
+   bool CurrentTick(MqlTick& tick,ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
+};
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
 SymbolInfo::SymbolInfo()
-  {
-  }
+{
+}
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
 SymbolInfo::~SymbolInfo()
-  {
-  }
+{
+}
 //+------------------------------------------------------------------+
-double SymbolInfo::AskTick()
-  {
-   return SymbolInfoDouble(Symbol(),SYMBOL_ASK);
-  }
-
-//+------------------------------------------------------------------+
-double SymbolInfo::BidTick()
-  {
-   return SymbolInfoDouble(Symbol(),SYMBOL_BID);
-  }
+bool SymbolInfo::CurrentTick(MqlTick& tick,ENUM_TIMEFRAMES period,string symbol)
+{
+   if(symbol=="current symbol")
+   {
+      symbol = Symbol();
+   }
+   SymbolInfoTick(Symbol(),tick);
+   return false;
+}
 //+------------------------------------------------------------------+
