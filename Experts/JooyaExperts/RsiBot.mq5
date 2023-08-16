@@ -12,11 +12,13 @@
 //+------------------------------------------------------------------+
 #include <Jooya/RsiManager.mqh>
 #include <Jooya/LogManager.mqh>
+#include <Jooya/Trade.mqh>
 //+------------------------------------------------------------------+
 //| Objects
 //+------------------------------------------------------------------+
 RsiManager rsi;
 LogManager lm;
+Trade trade;
 //+------------------------------------------------------------------+
 //| Inputs
 //+------------------------------------------------------------------+
@@ -52,7 +54,7 @@ int OnInit()
    }
    lm.addNewPosition("h1 => ");
    lm.addNewPosition("m5 => ");
-   rsi.setMagicNumber(InpMagicNumber);
+   trade.setMagicNumber(InpMagicNumber);
 
    return(INIT_SUCCEEDED);
 }
