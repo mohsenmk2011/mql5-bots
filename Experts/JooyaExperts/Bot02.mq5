@@ -5,7 +5,6 @@
 //+------------------------------------------------------------------+
 #include <Jooya/MaStrategy3.mqh>
 #include <Jooya/MaStrategy4.mqh>
-#include <Jooya/RsiStrategy01.mqh>
 #include <Jooya/CandleStrategy.mqh>
 #include <Jooya/JooyaHedgingStrategy.mqh>
 #include <Jooya/HedStochMaRsiStrategy04.mqh>
