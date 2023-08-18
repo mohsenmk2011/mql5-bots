@@ -34,6 +34,7 @@ public:
 
    datetime getCurrentCandleTime(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
    bool currentCandleHasAnyPosition(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
+   /// is this candle is created recently and this is first tick of this candle?
    bool isNewCandle(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
 };
 //+------------------------------------------------------------------+
