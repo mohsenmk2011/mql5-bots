@@ -54,7 +54,7 @@ public:
 //+------------------------------------------------------------------+
 RsiManager::RsiManager()
 {
-   M1Handle = iRSI(Symbol(),PERIOD_M1,21,,appliedPrice);
+   M1Handle = iRSI(Symbol(),PERIOD_M1,21,appliedPrice);
    ArraySetAsSeries(M1Array,true);
    M5Handle = iRSI(Symbol(),PERIOD_M5,21,appliedPrice);
    ArraySetAsSeries(M5Array,true);
