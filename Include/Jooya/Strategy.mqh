@@ -15,7 +15,6 @@
 #include <Jooya/CrossStates.mqh>
 #include <Jooya/MaLine.mqh>
 #include <Jooya/TrailingManager.mqh>
-#include <Jooya/MaManager.mqh>
 #include <Jooya/PositionManager.mqh>
 #include <Jooya/JooyaRates.mqh>
 #include <Jooya/LineManager.mqh>
@@ -31,7 +30,6 @@ protected:
    RatesManager rm;
    TrailingManager   tm;
    PositionManager   pm;
-   MaManager         mam;
    LineManager lm;
    LogManager logm;
    PositionInfo      positionInfo;
