@@ -4,6 +4,7 @@
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
 # the file an folder that in mql5 
 Images/
+Indicators/Free Indicators/
 Indicators/Examples/
 Profiles/
 Scripts/
@@ -34,6 +35,7 @@ Experts/Advisors
 Experts/*.ex5
 Experts/Examples
 Experts/JooyaExperts/*.ex5
+Experts/Free Robots
 #++++++++++++++++++++++++++++++++++++
 # Node artifact files
 node_modules/

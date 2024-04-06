@@ -55,17 +55,17 @@ public:
 //+------------------------------------------------------------------+
 RsiManager::RsiManager()
 {
-   M1Handle = iRSI(Symbol(),PERIOD_M1,21,PRICE_CLOSE);
+   M1Handle = iRSI(Symbol(),PERIOD_M1,21,appliedPrice);
    ArraySetAsSeries(M1Array,true);
-   M5Handle = iRSI(Symbol(),PERIOD_M5,21,PRICE_CLOSE);
+   M5Handle = iRSI(Symbol(),PERIOD_M5,21,appliedPrice);
    ArraySetAsSeries(M5Array,true);
-   M15Handle = iRSI(Symbol(),PERIOD_M15,21,PRICE_CLOSE);
+   M15Handle = iRSI(Symbol(),PERIOD_M15,21,appliedPrice);
    ArraySetAsSeries(M15Array,true);
-   M30Handle = iRSI(Symbol(),PERIOD_M30,21,PRICE_CLOSE);
+   M30Handle = iRSI(Symbol(),PERIOD_M30,21,appliedPrice);
    ArraySetAsSeries(M30Array,true);
-   H1Handle = iRSI(Symbol(),PERIOD_H1,21,PRICE_CLOSE);
+   H1Handle = iRSI(Symbol(),PERIOD_H1,21,appliedPrice);
    ArraySetAsSeries(H1Array,true);
-   H4Handle = iRSI(Symbol(),PERIOD_H4,21,PRICE_CLOSE);
+   H4Handle = iRSI(Symbol(),PERIOD_H4,21,appliedPrice);
    ArraySetAsSeries(H4Array,true);
 }
 //+------------------------------------------------------------------+
