@@ -1,10 +1,10 @@
-//+------------------------------------------------------------------+
-//|                                                  JTraderTool.mq5 |
-//|                                            Copyright 2024, Jooya |
-//|                             https://www.tradertool.jooyabash.com |
-//+------------------------------------------------------------------+
+//+-----------------------------------------------------------------------+
+//|                                                  JooyaTradingTool.mq5 |
+//|                                            Copyright 2024, Jooya      |
+//|                            https://www.JooyaTradingTool.jooyabash.com |
+//+-----------------------------------------------------------------------+
 #property copyright "Copyright 2024, Jooya"
-#property link      "https://www.tradertool.jooyabash.com"
+#property link      "https://www.JooyaTradingTool.jooyabash.com"
 #property version   "1.0.0"
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
