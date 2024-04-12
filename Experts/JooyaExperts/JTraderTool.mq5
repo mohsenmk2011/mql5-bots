@@ -11,6 +11,15 @@
 //+------------------------------------------------------------------+
 int OnInit()
   {
+   // read default template from json file
+   ChartSetInteger(0,CHART_COLOR_BACKGROUND,clrWhite);
+   ChartSetInteger(0,CHART_COLOR_FOREGROUND,clrBlack);
+
+   // Set bull candle color to red
+   ChartSetInteger(0,CHART_COLOR_CANDLE_BULL,clrLimeGreen);
+   ChartSetInteger(0,CHART_COLOR_CANDLE_BEAR,clrHotPink);
+   ChartSetInteger(0,CHART_COLOR_CHART_DOWN,clrRed);
+   ChartSetInteger(0,CHART_COLOR_CHART_UP,clrGreen);
    return(INIT_SUCCEEDED);
   }
 //+------------------------------------------------------------------+
