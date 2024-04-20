@@ -10,26 +10,29 @@
 //|                            https://www.JooyaTradingTool.jooyabash.com |
 //+-----------------------------------------------------------------------+
 #include <Controls/Dialog.mqh>
+#include <Charts/Chart.mqh>
 
 #property copyright "Copyright 2024, Jooya"
 #property link      "https://www.JooyaTradingTool.jooyabash.com"
 #property version   "1.0.0"
 
 CDialog dialogMain;
+CChart chart;
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
 //+------------------------------------------------------------------+
 int OnInit()
   {
    // read default template from json file
-   ChartSetInteger(0,CHART_COLOR_BACKGROUND,clrWhite);
-   ChartSetInteger(0,CHART_COLOR_FOREGROUND,clrBlack);
-
-   // Set bull candle color to red
-   ChartSetInteger(0,CHART_COLOR_CANDLE_BULL,clrLimeGreen);
-   ChartSetInteger(0,CHART_COLOR_CANDLE_BEAR,clrHotPink);
-   ChartSetInteger(0,CHART_COLOR_CHART_DOWN,clrRed);
-   ChartSetInteger(0,CHART_COLOR_CHART_UP,clrGreen);
+   //and set it to chart   
+   chart.Attach(ChartID());
+   chart.ShowLineAsk(true);
+   chart.ColorForeground(clrBlack);
+   chart.ColorBackground(clrWhite);
+   chart.ColorBarUp(clrGreen);
+   chart.ColorBarDown(clrRed);
+   chart.ColorCandleBull(clrLimeGreen);
+   chart.ColorCandleBear(clrHotPink);
    // create dialog
    dialogMain.Create(ChartID(),"Jooya Trading Tool",0,0,0,180,270);
    return(INIT_SUCCEEDED);
