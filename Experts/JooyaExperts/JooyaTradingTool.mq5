@@ -16,7 +16,7 @@
 #property link      "https://www.JooyaTradingTool.jooyabash.com"
 #property version   "1.0.0"
 #define  DIALOGWIDTH 180
-CDialog dialogMain;
+CAppDialog dialogMain;
 CButton btnBuy;
 CButton btnSell;
 CButton btnM1Period;
@@ -74,3 +74,12 @@ void OnTick()
   {
   }
 //+------------------------------------------------------------------+
+void  OnChartEvent(
+   const int       id,       // event ID 
+   const long&     lparam,   // long type event parameter
+   const double&   dparam,   // double type event parameter
+   const string&   sparam    // string type event parameter
+   )
+   {
+   dialogMain.ChartEvent(id,lparam,dparam,sparam);
+   }
