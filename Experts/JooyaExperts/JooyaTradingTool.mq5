@@ -81,5 +81,9 @@ void  OnChartEvent(
    const string&   sparam    // string type event parameter
    )
    {
-   dialogMain.ChartEvent(id,lparam,dparam,sparam);
+      dialogMain.ChartEvent(id,lparam,dparam,sparam);
+      if(sparam == btnH4Period.Name()&& id == CHARTEVENT_OBJECT_CLICK)
+      {
+         chart.SetSymbolPeriod(Symbol(),PERIOD_H4);
+      }
    }
