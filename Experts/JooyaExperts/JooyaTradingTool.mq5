@@ -43,6 +43,8 @@ SymbolInfo si;
 PositionInfo pi;
 PositionManager pm;
 TrailingManager tm;
+// is ea is running in strategy tester?
+bool isTesting = true;
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
 //+------------------------------------------------------------------+
@@ -94,6 +96,10 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
 {
+   if(isTesting)
+   {
+      CheckEvents();   
+   }
 }
 //+------------------------------------------------------------------+
 void OnChartEvent(
@@ -104,6 +110,8 @@ void OnChartEvent(
 )
 {
    Print("OnChartEvent ===> ");
+   // if this function is running so ea is running in mt5 not strategy tester
+   isTesting = false;
    dialogMain.ChartEvent(id,lparam,dparam,sparam);
    if(id == CHARTEVENT_OBJECT_CLICK)
    {
@@ -138,3 +146,10 @@ void OnChartEvent(
    }
 }
 //+------------------------------------------------------------------+
+void CheckEvents()
+{
+   // if we are in strategy tester OnChartEvent will not work
+   // so we should implement it with files,
+   // in a qt quick application by clikcing button,it will write on the file in bot we read this file
+   // for example we write in file ,sell 0.01 EurUsd or other things...   
+}
