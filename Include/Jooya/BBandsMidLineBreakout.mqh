@@ -8,7 +8,6 @@
 #include <Jooya/TrailingManager.mqh>
 #include <Trade/SymbolInfo.mqh>
 #include <Trade/DealInfo.mqh>
-#include <Jooya/MaManager.mqh>
 #include <Jooya/LineManager.mqh>
 
 #property copyright "Copyright 2022, MetaQuotes Ltd."
@@ -32,7 +31,6 @@ private:
 
    TrailingManager   tm;
    PositionManager   pm;
-   MaManager         mam;
    LineManager lm;
    string            comment;
    int conditions[5];

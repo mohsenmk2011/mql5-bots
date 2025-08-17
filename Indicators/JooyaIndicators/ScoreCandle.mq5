@@ -14,11 +14,14 @@
 #property indicator_width1  2
 #property indicator_label1  "Heiken Ashi Open;Heiken Ashi High;Heiken Ashi Low;Heiken Ashi Close"
 
+#include <Jooya/RatesManager.mqh>
+
 double haOpen[];
 double haHigh[];
 double haLow[];
 double haClose[];
 double haColor[];
+RatesManager rm;
 //+------------------------------------------------------------------+
 //| Custom indicator initialization function                         |
 //+------------------------------------------------------------------+
@@ -48,34 +51,51 @@ int OnCalculate(const int rates_total,
                 const long &volume[],
                 const int &spread[])
 {
-   int start;
-   if(prev_calculated==0)
+//   int start;
+//   if(prev_calculated==0)
+//   {
+//      double score = rm.getScore(1);
+//      haLow[0]=low[0];
+//      haHigh[0]=high[0];
+//      haOpen[0]=open[0];
+//      haClose[0]=open[0]+score;//close[0];
+//      start=1;
+//   }
+//   else
+//      start=prev_calculated-1;
+//   for(int i=start; i<rates_total && !IsStopped(); i++)
+//   {
+//      double score = rm.getScore(i+1);
+//      haLow[i]=low[i];
+//      haHigh[i]=high[i];
+//      haOpen[i]=open[i];
+//      haClose[i]=open[i]+score;//close[0];
+//
+//      if(score>=0)
+//         haColor[i]=0.0;
+//      else
+//         haColor[i]=1.0;
+//   }
+   printf("tick_volume count => " +tick_volume.Size());
+   for(int i=0; i<rates_total && !IsStopped(); i++)
    {
-      haLow[0]=low[0];
-      haHigh[0]=high[0];
-      haOpen[0]=open[0];
-      haClose[0]=close[0];
-      start=1;
-   }
-   else
-      start=prev_calculated-1;
-   for(int i=start; i<rates_total && !IsStopped(); i++)
-   {
-      double haOpenVal =(haOpen[i-1]+haClose[i-1])/2;
-      double haCloseVal=(open[i]+high[i]+low[i]+close[i])/4;
-      double haHighVal =MathMax(high[i],MathMax(haOpenVal,haCloseVal));
-      double haLowVal  =MathMin(low[i],MathMin(haOpenVal,haCloseVal));
-
-      haLow[i]=haLowVal;
-      haHigh[i]=haHighVal;
-      haOpen[i]=haOpenVal;
-      haClose[i]=haCloseVal;
-      if(haOpenVal<haCloseVal)
+      ///double score = rm.getScore(i+1);
+      haLow[i]=low[i];
+      haHigh[i]=high[i];
+      haOpen[i]=open[i];
+      haClose[i]=close[i];
+      if(close[i]>=open[i])
          haColor[i]=0.0;
       else
          haColor[i]=1.0;
    }
-//--- return value of prev_calculated for next call
+//for(int i=0; i<rates_total && !IsStopped(); i++)
+//{
+//   haLow[i]=low[i];
+//   haHigh[i]=high[i];
+//   haOpen[i]=open[i];
+//   haClose[i]=close[i];
+//}
    return(rates_total);
 }
 //+------------------------------------------------------------------+

@@ -8,7 +8,6 @@
 #include <Jooya/PositionManager.mqh>
 #include <Jooya/SymbolInfo.mqh>
 #include <Jooya/LogManager.mqh>
-#include <Jooya/TrailingManager.mqh>
 #include <Jooya/RatesManager.mqh>
 
 #property copyright "Copyright 2022, MetaQuotes Ltd."
@@ -26,13 +25,12 @@ private:
    PositionManager pm;
    SymbolInfo si;
    RatesManager rm;
-   TrailingManager   tm;
 public:
    Trade();
    ~Trade();
    void PositionCloseAll(ENUM_POSITION_TYPE type);
    bool ClosePositiveTrades(double minProfit);
-   bool IsOkForTrade(int maxSpread=5);
+   bool IsOkForTrade(int maxSpread=25);
    void Sell(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
    void Buy(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
 };
@@ -125,12 +123,15 @@ void Trade::Buy(ENUM_TIMEFRAMES period,string symbol)
    }
    if(rm.currentCandleHasAnyPosition(period,symbol))
    {
+      Print("current candle has position so return");
       return;
    }
    if(!IsOkForTrade())
    {
+      Print("is not ok for trade so return");
       return;
    }
+   Print("calculate stop loss");
    double sl=rm.getHigherLow(PERIOD_M5);
    double ask = si.Ask();
    if(ask == sl)
@@ -139,8 +140,10 @@ void Trade::Buy(ENUM_TIMEFRAMES period,string symbol)
    }
    if(Buy(pm.newPositionVolume(100),Symbol(),ask,sl))
    {
-
+      Print("buy position opened successfully");
+      return;
    }
+   Print("buy position was not succeed");
 }
 //+------------------------------------------------------------------+
 //|                                                                  |

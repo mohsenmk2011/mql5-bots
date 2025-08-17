@@ -56,7 +56,7 @@ public:
    //checks the buy and sell signals and will open new positions based on signal
    virtual void checkSignal();
    virtual void updateStatus();
-   bool IsOkForTrade(int maxSpread=5);
+   bool IsOkForTrade(int maxSpread=30);
    void Sell(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
    void Buy(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
    void Trail(ENUM_TIMEFRAMES period);

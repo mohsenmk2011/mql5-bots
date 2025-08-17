@@ -10,7 +10,6 @@
 #include <Jooya/SymbolInfo.mqh>
 #include <Trade/AccountInfo.mqh>
 #include <Jooya/PositionInfo.mqh>
-#include <Jooya/Trade.mqh>
 
 //+------------------------------------------------------------------+
 //|                                                                  |

@@ -18,7 +18,7 @@ private:
 public:
    SymbolInfo();
    ~SymbolInfo();
-   bool CurrentTick(MqlTick& tick,ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
+   bool CurrentTick(MqlTick& tick,ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="");
 };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -35,11 +35,10 @@ SymbolInfo::~SymbolInfo()
 //+------------------------------------------------------------------+
 bool SymbolInfo::CurrentTick(MqlTick& tick,ENUM_TIMEFRAMES period,string symbol)
 {
-   if(symbol=="current symbol")
+   if(symbol=="")
    {
       symbol = Symbol();
    }
-   SymbolInfoTick(Symbol(),tick);
-   return false;
+   return SymbolInfoTick(symbol,tick);
 }
 //+------------------------------------------------------------------+

@@ -8,9 +8,9 @@
 //+-----------------------------------------------------------------------------------------------+
 #include <Jooya/Strategy.mqh>
 #include <Trade/SymbolInfo.mqh>
-#include <Trade/DealInfo.mqh>
-#include <Jooya/MaManager.mqh>
+#include <Trade/DealInfo.mqh
 #include <Jooya/TrailingManager.mqh>
+#include <Jooya/LineManager.mqh>
 
 #property copyright "Copyright 2022, MetaQuotes Ltd."
 #property link      "https://www.mql5.com"
@@ -34,7 +34,7 @@ private:
    bool              stochCanBuy;
    bool              stochCanSell;
    //==============[ ma properties ]===============
-   MaManager         mam;
+   LineManager lm;
 
    //==============[ trailing properties ]===============
    TrailingManager   tm;
@@ -42,8 +42,8 @@ private:
    bool              trailSell;
 
 public:
-                     BBStochStrategy();
-                    ~BBStochStrategy();
+   BBStochStrategy();
+   ~BBStochStrategy();
    void              Run();
 };
 //+------------------------------------------------------------------+
@@ -126,7 +126,7 @@ void BBStochStrategy::Run()
    }
    if(!stochCanBuy)
    {
-      stochCanBuy=CrossOver(KArray,DArray);
+      stochCanBuy=lm.CrossOver(KArray,DArray);
       if(stochCanBuy)
       {
          stochCanSell=false;
@@ -134,7 +134,7 @@ void BBStochStrategy::Run()
    }
    if(!stochCanSell)
    {
-      stochCanSell=CrossOver(DArray,KArray);
+      stochCanSell=lm.CrossOver(DArray,KArray);
       if(stochCanSell)
       {
          stochCanBuy=false;
@@ -177,14 +177,14 @@ void BBStochStrategy::Run()
       }
    }
    if(stochCanBuy||bbCanBuy)
-   {   
+   {
       if(positionInfo.count()>0)
       {
          trade.PositionCloseAll(POSITION_TYPE_SELL);
       }
    }
    if(stochCanSell||bbCanSell)
-   {   
+   {
       if(positionInfo.count()>0)
       {
          trade.PositionCloseAll(POSITION_TYPE_BUY);

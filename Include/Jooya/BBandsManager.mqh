@@ -120,7 +120,7 @@ void BBandsManager::readIndicotor()
    ArraySetAsSeries(M1UpperBandArray,true);
    ArraySetAsSeries(M1LowerBandArray,true);
 
-   int M1BBHandl=iBands(Symbol(),PERIOD_M1,20,0,2.0,PRICE_CLOSE);
+   int M1BBHandl=iBands(Symbol(),PERIOD_M1,27,0,2.7,PRICE_CLOSE);
 
    CopyBuffer(M1BBHandl,0,0,10,M1MidBandArray);
    CopyBuffer(M1BBHandl,1,0,10,M1UpperBandArray);
@@ -131,7 +131,7 @@ void BBandsManager::readIndicotor()
    ArraySetAsSeries(M5UpperBandArray,true);
    ArraySetAsSeries(M5LowerBandArray,true);
 
-   int M5BBHandl=iBands(Symbol(),PERIOD_M5,20,0,2.0,PRICE_CLOSE);
+   int M5BBHandl=iBands(Symbol(),PERIOD_M5,27,0,2.7,PRICE_CLOSE);
 
    CopyBuffer(M5BBHandl,0,0,10,M5MidBandArray);
    CopyBuffer(M5BBHandl,1,0,10,M5UpperBandArray);
@@ -142,7 +142,7 @@ void BBandsManager::readIndicotor()
    ArraySetAsSeries(M15UpperBandArray,true);
    ArraySetAsSeries(M15LowerBandArray,true);
 
-   int M15BBHandl=iBands(Symbol(),PERIOD_M15,20,0,2.0,PRICE_CLOSE);
+   int M15BBHandl=iBands(Symbol(),PERIOD_M15,27,0,2.7,PRICE_CLOSE);
 
    CopyBuffer(M15BBHandl,0,0,10,M15MidBandArray);
    CopyBuffer(M15BBHandl,1,0,10,M15UpperBandArray);
@@ -152,7 +152,7 @@ void BBandsManager::readIndicotor()
    ArraySetAsSeries(M30UpperBandArray,true);
    ArraySetAsSeries(M30LowerBandArray,true);
 
-   int M30BBHandl=iBands(Symbol(),PERIOD_M30,20,0,2.0,PRICE_CLOSE);
+   int M30BBHandl=iBands(Symbol(),PERIOD_M30,27,0,2.7,PRICE_CLOSE);
 
    CopyBuffer(M30BBHandl,0,0,10,M30MidBandArray);
    CopyBuffer(M30BBHandl,1,0,10,M30UpperBandArray);
@@ -163,7 +163,7 @@ void BBandsManager::readIndicotor()
    ArraySetAsSeries(h1UpperBandArray,true);
    ArraySetAsSeries(h1LowerBandArray,true);
 
-   int h1BBHandl=iBands(Symbol(),PERIOD_H1,20,0,2.0,PRICE_CLOSE);
+   int h1BBHandl=iBands(Symbol(),PERIOD_H1,27,0,2.7,PRICE_CLOSE);
 
    CopyBuffer(h1BBHandl,0,0,10,h1MidBandArray);
    CopyBuffer(h1BBHandl,1,0,10,h1UpperBandArray);
@@ -174,7 +174,7 @@ void BBandsManager::readIndicotor()
    ArraySetAsSeries(h4UpperBandArray,true);
    ArraySetAsSeries(h4LowerBandArray,true);
 
-   int h4BBHandl=iBands(Symbol(),PERIOD_H4,20,0,2.0,PRICE_CLOSE);
+   int h4BBHandl=iBands(Symbol(),PERIOD_H4,27,0,2.7,PRICE_CLOSE);
 
    CopyBuffer(h4BBHandl,0,0,10,h4MidBandArray);
    CopyBuffer(h4BBHandl,1,0,10,h4UpperBandArray);

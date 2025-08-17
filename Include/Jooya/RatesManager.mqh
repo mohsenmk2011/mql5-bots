@@ -15,6 +15,8 @@ class RatesManager
 private:
    JooyaRates        jr;
    PositionInfo      pi;
+   datetime previousCandleTime;
+   MqlTick lastCandleTicks[];
 public:
    RatesManager();
    ~RatesManager();
@@ -27,6 +29,7 @@ public:
    //set the time frames that should be copy
    void              setTimeframes();
    void              copyRates();
+   double              getScore(int candleNumber);
    void getPrice(MqlRates& price[],ENUM_TIMEFRAMES period);
 
    double             getHigherLow(ENUM_TIMEFRAMES period);
@@ -199,13 +202,48 @@ bool RatesManager::currentCandleHasAnyPosition(ENUM_TIMEFRAMES period,string sym
 //+------------------------------------------------------------------+
 bool RatesManager::isNewCandle(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol")
 {
-   static datetime previouseTime = 0;
    datetime currentCandleTime = getCurrentCandleTime(period,symbol);
-   if(previouseTime!=currentCandleTime)
+   if(previousCandleTime != currentCandleTime)
    {
-      previouseTime = currentCandleTime;
+      previousCandleTime = currentCandleTime;
       return true;
    }
    return false;
+}
+//+------------------------------------------------------------------+
+double RatesManager::getScore(int candleNumber)
+{
+
+   // Determine the start and end times of the candle
+   datetime candle_start = iTime(Symbol(), Period(), candleNumber);
+   datetime candle_end = iTime(Symbol(), Period(), candleNumber-1);
+   ulong start = ulong(candle_start)*1000;
+   ulong end = ulong(candle_end)*1000;
+   Print("candle_start => ",candle_start);
+   Print("start => ",start);
+   Print("candle_end => ",candle_end);
+   Print("end => ",end);
+   ///ArraySetAsSeries(lastCandleTicks,true);
+   int count = CopyTicksRange(Symbol(),lastCandleTicks, COPY_TICKS_ALL, start,end);
+   Print("last Candle Ticks count => ",lastCandleTicks.Size());
+   double s = 0;
+   //for(int i = 1;i<lastCandleTicks.Size(); i++)
+   //{
+   //   Print("tick" , i-1 ," => ",lastCandleTicks[i-1].ask);
+   //   double d = lastCandleTicks[i].ask - lastCandleTicks[i-1].ask;
+   //   s = s + d;
+   //}
+   for(int i = lastCandleTicks.Size()-1;i>0; i--)
+   {
+      //Print("tick" , i-1 ," => ",lastCandleTicks[i-1].ask);
+      double d = lastCandleTicks[i].ask - lastCandleTicks[i-1].ask;
+      s = s + d;
+   }
+   //for(int i = 0;i<lastCandleTicksMannauly.Size(); i++)
+   //{
+   //   Print("tick" , i ," => ",lastCandleTicksMannauly[i].ask);
+   //}
+   Print("score => ",s);
+   return s;
 }
 //+------------------------------------------------------------------+

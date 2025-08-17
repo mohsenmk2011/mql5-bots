@@ -30,6 +30,7 @@ public:
    void              trail(ENUM_POSITION_TYPE type);
    void              trailWithAtr();
    void              trailWithBalanceFraction(double fraction);
+   void              trailWithLowHigh(double low,double high);
    void              trailWithLowerHeighs(ENUM_TIMEFRAMES period,RatesManager& r);
    string            comment;
 };
@@ -230,6 +231,40 @@ void TrailingManager::trailWithLowerHeighs(ENUM_TIMEFRAMES period,RatesManager& 
       else if(pi.isSell())
       {
          newStopLoss=r.getLowerHigh(period);
+      }
+      if(newStopLoss == currentSL)
+      {
+         return;
+      }
+      trade.PositionModify(ticket,newStopLoss,0);
+   }
+}
+//+------------------------------------------------------------------+
+//
+//+------------------------------------------------------------------+
+void TrailingManager::trailWithLowHigh(double low,double high)
+{
+   for(int i=pi.count()-1; i>=0; i--)
+   {
+      pi.SelectByIndex(i);
+      string symbol = pi.Symbol();
+      ulong ticket = pi.Ticket();
+      double currentSL=pi.StopLoss();
+      double currentPrice=pi.PriceCurrent();
+      double newStopLoss=0;
+      if(pi.isBuy())
+      {
+         newStopLoss = low; //- si.Spread() * si.Point();
+         //double ask = NormalizeDouble(SymbolInfoDouble(Symbol(),SYMBOL_ASK),Digits());
+         //if(currentPrice>currentSL+10*Digits())
+         //{
+         //}
+      }
+      else if(pi.isSell())
+      {
+         Print("si.Spread() => "+si.Spread());
+         Print("si.Point() => "+si.Point());
+         newStopLoss = high;//+ si.Spread() * si.Point();
       }
       if(newStopLoss == currentSL)
       {

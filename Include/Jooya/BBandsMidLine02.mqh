@@ -8,7 +8,6 @@
 #include <Jooya/TrailingManager.mqh>
 #include <Trade/SymbolInfo.mqh>
 #include <Trade/DealInfo.mqh>
-#include <Jooya/MaManager.mqh>
 #include <Jooya/LineManager.mqh>
 
 #property copyright "Copyright 2022, MetaQuotes Ltd."
@@ -32,7 +31,6 @@ private:
 
    TrailingManager   tm;
    PositionManager   pm;
-   MaManager         mam;
    LineManager lm;
    string            comment;
    string            positionComment;
@@ -100,7 +98,7 @@ void BBandsMidLine02::Run()
    double bbMidLineAngle= lm.angle(Prices,midBandArray);
    comment+="bbMidLineAngle => "+bbMidLineAngle+"\n";
 //+--------------------------[ signals ]-------------------------+
-   if(IsMidLineStraight(bbMidLineAngle)&&false)
+   if(IsMidLineStraight(bbMidLineAngle))
    {
       comment+="bbMidLine => straight \n";
       if(IsPriceTouchedTop(Prices,upperBandArray))//sell and close buy positions
@@ -126,7 +124,7 @@ void BBandsMidLine02::Run()
 //+------------------------------------------------------------------+
    if(IsPricePassedUp(Prices,midBandArray))//close sell position
    {
-      if(positionInfo.buyCount()==0&&!IsMidLineStraight(bbMidLineAngle))
+      if(positionInfo.buyCount()==0)//&&!IsMidLineStraight(bbMidLineAngle))
       {
          trade.Buy(pm.newPositionVolume(),Symbol(),symbolInfo.Ask(),pm.buyStopLoss(0.01),0,"bbMidLine Is goin up,Price passed up,so buy.");
       }
