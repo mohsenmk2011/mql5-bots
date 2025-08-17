@@ -98,7 +98,12 @@ void OnTick()
       }
       Print("calculate stop loss");
       double sl=lowM5;
-      double ask = si.Ask();     
+      double ask = si.Ask();
+      if(pi.buyCount()>0)
+      {
+         Print("there is a buy postion now,return");
+         return;
+      }
       if(trade.Buy(pm.newPositionVolume(10),Symbol(),ask,sl))
       {
          Print("buy position opened successfully");        
@@ -119,7 +124,12 @@ void OnTick()
       }
       Print("calculate stop loss");
       double sl=highM5;
-      double bid = si.Bid();     
+      double bid = si.Bid();
+      if(pi.sellCount()>0)
+      {
+         Print("there is a buy postion now,return");
+         return;
+      }
       if(trade.Sell(pm.newPositionVolume(10),Symbol(),bid,sl))
       {
          Print("sell position opened successfully");
