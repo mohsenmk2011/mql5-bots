@@ -34,6 +34,7 @@ public:
 
    double             getHigherLow(ENUM_TIMEFRAMES period);
    double             getLowerHigh(ENUM_TIMEFRAMES period);
+   int             getFirstDiffrentColorCandleIndex(ENUM_TIMEFRAMES period,int index =0);
 
    datetime getCurrentCandleTime(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
    bool currentCandleHasAnyPosition(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
@@ -80,6 +81,26 @@ void RatesManager::copyRates()
 //+----------------------------[ H4 copy rates ]-----------------------------+
    ArraySetAsSeries(H4Prices,true);
    CopyRates(Symbol(),PERIOD_H4,0,10,H4Prices);
+}
+
+//+------------------------------------------------------------------+
+//| 
+//+------------------------------------------------------------------+
+int RatesManager::getFirstDiffrentColorCandleIndex(ENUM_TIMEFRAMES period,int index)
+{
+   MqlRates candles[];
+   getPrice(candles,period);   
+   int candlesCount = ArraySize(candles);
+   bool isCurrentCandleGreen = jr.IsUpCandle(candles[index]);
+
+   for(int i = index +1; i<candlesCount; i++)
+   {
+      if(jr.IsUpCandle(candles[i])!=isCurrentCandleGreen)
+      {
+         return i;
+      }
+   }
+   return -1;
 }
 //+------------------------------------------------------------------+
 //|                This method will be used in down trend
