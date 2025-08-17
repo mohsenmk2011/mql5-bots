@@ -69,8 +69,6 @@ void OnTick()
 {
    previousTick = currentTick;
    si.CurrentTick(currentTick);
-   int buyCount = pi.buyCount();
-   int sellCount = pi.sellCount();
 
    // calculate high and low in M5 for open position
    highM5 = iHigh(Symbol(),InpHighPeriod,iHighest(Symbol(),InpHighPeriod,MODE_HIGH,InpBarCount,1));
@@ -84,18 +82,18 @@ void OnTick()
    DrawObjectM1();
    DrawObjectM5();
 //buy signal
-
+   
+   if(!trade.IsOkForTrade())
+   {
+      Print("is not ok for trade so return");
+      return;
+   }
    //Print("previousTick.ask => "+DoubleToString(previousTick.ask));
    //Print("currentTick.ask => "+DoubleToString(currentTick.ask));
-   if(buyCount ==0&& highM5!=0 && highM1>highM5)//previousTick.ask<highM5&&currentTick.ask>=highM5)
+   if(highM5!=0 && highM1>highM5)//previousTick.ask<highM5&&currentTick.ask>=highM5)
    {
       Print("is going to open buy position");
       
-      if(!trade.IsOkForTrade())
-      {
-         Print("is not ok for trade so return");
-         return;
-      }
       Print("calculate stop loss");
       double sl=lowM5;
       double ask = si.Ask();
@@ -113,15 +111,10 @@ void OnTick()
    }
 
 //sell signal
-   if(sellCount ==0&& lowM5!=0 && lowM1<lowM5)//previousTick.bid>lowM5&&currentTick.bid<=lowM5)
+   if(lowM5!=0 && lowM1<lowM5)//previousTick.bid>lowM5&&currentTick.bid<=lowM5)
    {
       Print("is going to open sell position");
       
-      if(!trade.IsOkForTrade())
-      {
-         Print("is not ok for trade so return");
-         return;
-      }
       Print("calculate stop loss");
       double sl=highM5;
       double bid = si.Bid();
