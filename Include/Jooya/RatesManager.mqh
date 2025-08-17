@@ -35,6 +35,7 @@ public:
    double             getHigherLow(ENUM_TIMEFRAMES period);
    double             getLowerHigh(ENUM_TIMEFRAMES period);
    int             getFirstDiffrentColorCandleIndex(ENUM_TIMEFRAMES period,int index =0);
+   MqlRates             getFirstDiffrentColorMoveAsCandle(ENUM_TIMEFRAMES period,int startIndex);
 
    datetime getCurrentCandleTime(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
    bool currentCandleHasAnyPosition(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
@@ -82,7 +83,36 @@ void RatesManager::copyRates()
    ArraySetAsSeries(H4Prices,true);
    CopyRates(Symbol(),PERIOD_H4,0,10,H4Prices);
 }
-
+//+------------------------------------------------------------------+
+//| will retruns first moves with diffrent color as mqlrate structure
+//+------------------------------------------------------------------+
+MqlRates RatesManager::getFirstDiffrentColorMoveAsCandle(ENUM_TIMEFRAMES period,int startIndex)
+{
+   MqlRates result;
+   
+   int firstDiffrentColorCanldeIndex = getFirstDiffrentColorCandleIndex(period,startIndex);
+   if(firstDiffrentColorCanldeIndex == -1)
+   {
+      return result;
+   }   
+   int secondDiffrentColorCanldeIndex = getFirstDiffrentColorCandleIndex(period,firstDiffrentColorCanldeIndex);
+   if(secondDiffrentColorCanldeIndex == -1)
+   {
+      return result;
+   }
+   secondDiffrentColorCanldeIndex--;
+   MqlRates candles[];
+   getPrice(candles,period);
+   bool isCurrentCandleGreen = jr.IsUpCandle(candles[startIndex]);
+   if(firstDiffrentColorCanldeIndex == secondDiffrentColorCanldeIndex)
+   {
+      return candles[firstDiffrentColorCanldeIndex];
+   }
+   result.open = candles[secondDiffrentColorCanldeIndex].open;
+   result.close = candles[firstDiffrentColorCanldeIndex].close;
+   
+   return result;
+}
 //+------------------------------------------------------------------+
 //| 
 //+------------------------------------------------------------------+
