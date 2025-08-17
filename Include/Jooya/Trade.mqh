@@ -31,8 +31,8 @@ public:
    void PositionCloseAll(ENUM_POSITION_TYPE type);
    bool ClosePositiveTrades(double minProfit);
    bool IsOkForTrade(int maxSpread=25);
-   void Sell(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
-   void Buy(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
+   void OpenSellPosition(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
+   void OpenBuyPosition(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
 };
 //+------------------------------------------------------------------+
 //|                                                                  |
@@ -78,7 +78,7 @@ bool Trade::IsOkForTrade(int maxSpread)
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void Trade::Sell(ENUM_TIMEFRAMES period,string symbol)
+void Trade::OpenSellPosition(ENUM_TIMEFRAMES period,string symbol)
 {
    if(symbol=="current symbol")
    {
@@ -110,7 +110,7 @@ void Trade::Sell(ENUM_TIMEFRAMES period,string symbol)
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void Trade::Buy(ENUM_TIMEFRAMES period,string symbol)
+void Trade::OpenBuyPosition(ENUM_TIMEFRAMES period,string symbol)
 {
    rm.copyRates();
    if(symbol=="current symbol")
