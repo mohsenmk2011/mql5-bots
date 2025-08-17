@@ -26,6 +26,7 @@ public:
    MqlRates          M30Prices[];
    MqlRates          H1Prices[];
    MqlRates          H4Prices[];
+   MqlRates          D1Prices[];
    //set the time frames that should be copy
    void              setTimeframes();
    void              copyRates();
@@ -82,6 +83,9 @@ void RatesManager::copyRates()
 //+----------------------------[ H4 copy rates ]-----------------------------+
    ArraySetAsSeries(H4Prices,true);
    CopyRates(Symbol(),PERIOD_H4,0,10,H4Prices);
+//+----------------------------[ D1 copy rates ]-----------------------------+
+   ArraySetAsSeries(D1Prices,true);
+   CopyRates(Symbol(),PERIOD_D1,0,10,D1Prices);
 }
 //+------------------------------------------------------------------+
 //| will retruns first moves with diffrent color as mqlrate structure
