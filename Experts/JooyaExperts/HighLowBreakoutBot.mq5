@@ -18,6 +18,8 @@
 //+------------------------< Inputs >--------------------------------+
 static input ulong InpMagicNumber = 5346; //magic number
 input int InpBarCount = 6; //bar count
+input ENUM_TIMEFRAMES InpLowPeriod = PERIOD_M5;// low period
+input ENUM_TIMEFRAMES InpHighPeriod = PERIOD_H4;// high period
 //+---------------------< Global variables >------------------------+
 CChart chart;
 LogManager lm;
@@ -71,11 +73,11 @@ void OnTick()
    int sellCount = pi.sellCount();
 
    // calculate high and low in M5 for open position
-   highM5 = iHigh(Symbol(),PERIOD_M5,iHighest(Symbol(),PERIOD_M5,MODE_HIGH,InpBarCount,1));
-   lowM5 = iLow(Symbol(),PERIOD_M5,iLowest(Symbol(),PERIOD_M5,MODE_LOW,InpBarCount,1));
+   highM5 = iHigh(Symbol(),InpHighPeriod,iHighest(Symbol(),InpHighPeriod,MODE_HIGH,InpBarCount,1));
+   lowM5 = iLow(Symbol(),InpHighPeriod,iLowest(Symbol(),InpHighPeriod,MODE_LOW,InpBarCount,1));
    // calculate high and low in M1 trail stop loss
-   highM1 = iHigh(Symbol(),PERIOD_M1,iHighest(Symbol(),PERIOD_M1,MODE_HIGH,InpBarCount,0));
-   lowM1 = iLow(Symbol(),PERIOD_M1,iLowest(Symbol(),PERIOD_M1,MODE_LOW,InpBarCount,0));
+   highM1 = iHigh(Symbol(),InpLowPeriod,iHighest(Symbol(),InpLowPeriod,MODE_HIGH,InpBarCount,0));
+   lowM1 = iLow(Symbol(),InpLowPeriod,iLowest(Symbol(),InpLowPeriod,MODE_LOW,InpBarCount,0));
    //Print("highM5 => "+DoubleToString(highM5));
    //Print("lowM5 => "+DoubleToString(lowM5));
    
@@ -150,7 +152,7 @@ bool inputsAreValid()
 //+------------------------------------------------------------------+
 void DrawObjectM5()
 {
-   datetime time = iTime(Symbol(),PERIOD_M5,InpBarCount);
+   datetime time = iTime(Symbol(),InpHighPeriod,InpBarCount);
 /// draw highM5 line
    ObjectDelete(NULL,"highM5");
    ObjectCreate(NULL,"highM5",OBJ_TREND,0,time,highM5,TimeCurrent(),highM5);
@@ -171,7 +173,7 @@ void DrawObjectM5()
 //+------------------------------------------------------------------+
 void DrawObjectM1()
 {
-   datetime time = iTime(Symbol(),PERIOD_M1,InpBarCount);
+   datetime time = iTime(Symbol(),InpLowPeriod,InpBarCount);
 /// draw highM1 line
    ObjectDelete(NULL,"highM1");
    ObjectCreate(NULL,"highM1",OBJ_TREND,0,time,highM1,TimeCurrent(),highM1);
