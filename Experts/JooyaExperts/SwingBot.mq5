@@ -175,15 +175,15 @@ void DrawObjectM5(MqlRates &candle)
 /// draw highM5 line
    ObjectDelete(NULL,"highM5");
    ObjectCreate(NULL,"highM5",OBJ_TREND,0,time,candle.open,TimeCurrent(),candle.open);
-   ObjectSetInteger(NULL,"highM5",OBJPROP_WIDTH,2);
-   ObjectSetInteger(NULL,"highM5",OBJPROP_COLOR,clrBlack);
+   ObjectSetInteger(NULL,"highM5",OBJPROP_WIDTH,3);
+   ObjectSetInteger(NULL,"highM5",OBJPROP_COLOR,clrDarkBlue);
 
 
 /// draw lowM5 line
    ObjectDelete(NULL,"lowM5");
    ObjectCreate(NULL,"lowM5",OBJ_TREND,0,time,candle.close,TimeCurrent(),candle.close);
-   ObjectSetInteger(NULL,"lowM5",OBJPROP_WIDTH,2);
-   ObjectSetInteger(NULL,"lowM5",OBJPROP_COLOR,clrBlack);
+   ObjectSetInteger(NULL,"lowM5",OBJPROP_WIDTH,3);
+   ObjectSetInteger(NULL,"lowM5",OBJPROP_COLOR,clrDarkBlue);
 }
 //+------------------------------------------------------------------+
 
@@ -196,15 +196,15 @@ void DrawObjectM1(MqlRates &candle)
 /// draw highM1 line
    ObjectDelete(NULL,"highM1");
    ObjectCreate(NULL,"highM1",OBJ_TREND,0,time,candle.open,TimeCurrent(),candle.open);
-   ObjectSetInteger(NULL,"highM1",OBJPROP_WIDTH,1);
-   ObjectSetInteger(NULL,"highM1",OBJPROP_COLOR,clrRed);
+   ObjectSetInteger(NULL,"highM1",OBJPROP_WIDTH,2);
+   ObjectSetInteger(NULL,"highM1",OBJPROP_COLOR,clrDarkGreen);
 
 
 /// draw lowM1 line
    ObjectDelete(NULL,"lowM1");
    ObjectCreate(NULL,"lowM1",OBJ_TREND,0,time,candle.close,TimeCurrent(),candle.close);
-   ObjectSetInteger(NULL,"lowM1",OBJPROP_WIDTH,1);
-   ObjectSetInteger(NULL,"lowM1",OBJPROP_COLOR,clrRed);
+   ObjectSetInteger(NULL,"lowM1",OBJPROP_WIDTH,2);
+   ObjectSetInteger(NULL,"lowM1",OBJPROP_COLOR,clrDarkGreen);
 }
 //+------------------------------------------------------------------+
 //| Returns index of the first candle with different color           |
