@@ -74,7 +74,8 @@ void OnDeinit(const int reason)
 void OnTick()
 {
    rm.copyRates(false,true,false,false,false,true,true);
-   MqlRates firstDiffrentColorMoveAsCandle = rm.getFirstDiffrentColorMoveAsCandle(InpHighPeriod,0);
+   MqlRates firstDiffrentColorMoveAsCandleHighPeriod = rm.getFirstDiffrentColorMoveAsCandle(InpHighPeriod,0);
+   MqlRates firstDiffrentColorMoveAsCandleLowPeriod = rm.getFirstDiffrentColorMoveAsCandle(InpLowPeriod,0);
    previousTick = currentTick;
    si.CurrentTick(currentTick);
    int buyCount = pi.buyCount();
@@ -89,7 +90,8 @@ void OnTick()
    //Print("lowM5 => "+DoubleToString(lowM5));
    
   // DrawObjectM1();
-   DrawObjectM5(firstDiffrentColorMoveAsCandle);
+   DrawObjectM5(firstDiffrentColorMoveAsCandleHighPeriod);
+   DrawObjectM1(firstDiffrentColorMoveAsCandleLowPeriod);
 //buy signal
 return;
    //Print("previousTick.ask => "+DoubleToString(previousTick.ask));
@@ -188,19 +190,19 @@ void DrawObjectM5(MqlRates &candle)
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void DrawObjectM1()
+void DrawObjectM1(MqlRates &candle)
 {
    datetime time = iTime(Symbol(),InpLowPeriod,InpBarCount);
 /// draw highM1 line
    ObjectDelete(NULL,"highM1");
-   ObjectCreate(NULL,"highM1",OBJ_TREND,0,time,highM1,TimeCurrent(),highM1);
+   ObjectCreate(NULL,"highM1",OBJ_TREND,0,time,candle.open,TimeCurrent(),candle.open);
    ObjectSetInteger(NULL,"highM1",OBJPROP_WIDTH,1);
    ObjectSetInteger(NULL,"highM1",OBJPROP_COLOR,clrRed);
 
 
 /// draw lowM1 line
    ObjectDelete(NULL,"lowM1");
-   ObjectCreate(NULL,"lowM1",OBJ_TREND,0,time,lowM1,TimeCurrent(),lowM1);
+   ObjectCreate(NULL,"lowM1",OBJ_TREND,0,time,candle.close,TimeCurrent(),candle.close);
    ObjectSetInteger(NULL,"lowM1",OBJPROP_WIDTH,1);
    ObjectSetInteger(NULL,"lowM1",OBJPROP_COLOR,clrRed);
 }
