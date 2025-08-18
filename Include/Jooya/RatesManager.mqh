@@ -29,7 +29,7 @@ public:
    MqlRates          D1Prices[];
    //set the time frames that should be copy
    void              setTimeframes();
-   void              copyRates();
+   void              copyRates(bool m1=true,bool m5=true,bool m15=true,bool m30=true,bool h1=true,bool h4=true,bool d1=true);
    double              getScore(int candleNumber);
    void getPrice(MqlRates& price[],ENUM_TIMEFRAMES period);
 
@@ -63,29 +63,50 @@ void RatesManager::setTimeframes()
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void RatesManager::copyRates()
+void RatesManager::copyRates(bool m1,bool m5,bool m15,bool m30,bool h1,bool h4,bool d1)
 {
 //+----------------------------[ M1 copy rates ]-----------------------------+
-   ArraySetAsSeries(M1Prices,true);
-   CopyRates(Symbol(),PERIOD_M1,0,10,M1Prices);
+   if(m1)
+   {
+      ArraySetAsSeries(M1Prices,true);
+      CopyRates(Symbol(),PERIOD_M1,0,10,M1Prices);   
+   }
 //+----------------------------[ M5 copy rates ]-----------------------------+
-   ArraySetAsSeries(M5Prices,true);
-   CopyRates(Symbol(),PERIOD_M5,0,10,M5Prices);
+   if(m5)
+   {   
+      ArraySetAsSeries(M5Prices,true);
+      CopyRates(Symbol(),PERIOD_M5,0,10,M5Prices);
+   }
 //+----------------------------[ M15 copy rates ]-----------------------------+
-   ArraySetAsSeries(M15Prices,true);
-   CopyRates(Symbol(),PERIOD_M15,0,10,M15Prices);
+   if(m15)
+   {   
+      ArraySetAsSeries(M15Prices,true);
+      CopyRates(Symbol(),PERIOD_M15,0,10,M15Prices);
+   }
 //+----------------------------[ M30 copy rates ]-----------------------------+
-   ArraySetAsSeries(M30Prices,true);
-   CopyRates(Symbol(),PERIOD_M30,0,10,M30Prices);
+   if(m30)
+   {
+      ArraySetAsSeries(M30Prices,true);
+      CopyRates(Symbol(),PERIOD_M30,0,10,M30Prices);   
+   }
 //+----------------------------[ H1 copy rates ]-----------------------------+
-   ArraySetAsSeries(H1Prices,true);
-   CopyRates(Symbol(),PERIOD_H1,0,10,H1Prices);
+   if(h1)
+   {   
+      ArraySetAsSeries(H1Prices,true);
+      CopyRates(Symbol(),PERIOD_H1,0,10,H1Prices);
+   }
 //+----------------------------[ H4 copy rates ]-----------------------------+
-   ArraySetAsSeries(H4Prices,true);
-   CopyRates(Symbol(),PERIOD_H4,0,10,H4Prices);
+   if(h4)
+   {   
+      ArraySetAsSeries(H4Prices,true);
+      CopyRates(Symbol(),PERIOD_H4,0,10,H4Prices);
+   }
 //+----------------------------[ D1 copy rates ]-----------------------------+
-   ArraySetAsSeries(D1Prices,true);
-   CopyRates(Symbol(),PERIOD_D1,0,10,D1Prices);
+   if(d1)
+   {
+      ArraySetAsSeries(D1Prices,true);
+      CopyRates(Symbol(),PERIOD_D1,0,10,D1Prices);   
+   }
 }
 //+------------------------------------------------------------------+
 //| will retruns first moves with diffrent color as mqlrate structure

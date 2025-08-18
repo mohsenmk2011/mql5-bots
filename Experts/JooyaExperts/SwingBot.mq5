@@ -73,7 +73,7 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
 {
-   rm.copyRates();
+   rm.copyRates(false,true,false,false,false,true,true);
    MqlRates firstDiffrentColorMoveAsCandle = rm.getFirstDiffrentColorMoveAsCandle(InpHighPeriod,0);
    previousTick = currentTick;
    si.CurrentTick(currentTick);
