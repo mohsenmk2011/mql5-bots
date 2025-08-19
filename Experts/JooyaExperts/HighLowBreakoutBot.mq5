@@ -15,6 +15,7 @@
 #include <Jooya/PositionInfo.mqh>
 #include <Jooya/TrailingManager.mqh>
 #include <Charts/Chart.mqh>
+#include <Jooya/RatesManager.mqh>
 //+------------------------< Inputs >--------------------------------+
 static input ulong InpMagicNumber = 5346; //magic number
 input int InpBarCount = 6; //bar count
@@ -28,6 +29,7 @@ SymbolInfo si;
 PositionInfo pi;
 PositionManager pm;
 TrailingManager tm;
+RatesManager rm;
 double highM5 = 0; // highest price of last N bar
 double lowM5 = 0; // lowest price of last N bar
 double highM1 = 0; // highest price of last N bar
@@ -92,41 +94,25 @@ void OnTick()
    //Print("currentTick.ask => "+DoubleToString(currentTick.ask));
    if(highM5!=0 && highM1>highM5)//previousTick.ask<highM5&&currentTick.ask>=highM5)
    {
-      Print("is going to open buy position");
-      
-      Print("calculate stop loss");
+      Print("is going to open buy position");      
       double sl=lowM5;
       double ask = si.Ask();
-      if(pi.buyCount()>0)
-      {
-         Print("there is a buy postion now,return");
-         return;
-      }
       if(trade.Buy(pm.newPositionVolume(10),Symbol(),ask,sl))
       {
-         Print("buy position opened successfully");        
-         return;
+         Print("buy position opened successfully"); 
       }
       Print("buy position was not succeed");
    }
 
-//sell signal
-   if(lowM5!=0 && lowM1<lowM5)//previousTick.bid>lowM5&&currentTick.bid<=lowM5)
+   //sell signal
+   if(isSellSignal())
    {
-      Print("is going to open sell position");
-      
-      Print("calculate stop loss");
+      Print("is going to open sell position");      
       double sl=highM5;
       double bid = si.Bid();
-      if(pi.sellCount()>0)
-      {
-         Print("there is a buy postion now,return");
-         return;
-      }
       if(trade.Sell(pm.newPositionVolume(10),Symbol(),bid,sl))
       {
          Print("sell position opened successfully");
-         return;
       }
       Print("sell position was not succeed");
    }
@@ -191,3 +177,35 @@ void DrawObjectM1()
    ObjectSetInteger(NULL,"lowM1",OBJPROP_COLOR,clrRed);
 }
 //+------------------------------------------------------------------+
+bool isBuySignal()
+{
+   if(pi.buyCount()>0)
+   {
+      Print("there is a buy postion now,return");
+      return false;
+   }
+   if(!(highM5!=0 && highM1>highM5))
+   {
+      return false;
+   }
+   return true;
+}
+bool isSellSignal()
+{
+   if(pi.sellCount()>0)
+   {
+      Print("there is a sell postion now,return");
+      return false;
+   }
+   if(!(lowM5!=0 && lowM1<lowM5))//previousTick.bid>lowM5&&currentTick.bid<=lowM5)
+   {
+      return false;
+   }
+   //MqlRates M5Prices[];
+   //rm.getPrice(M5Prices,PERIOD_M5);
+   //if(!(M5Prices[1].close<lowM1))
+   //{
+    //  return false;
+   //}
+   return true;
+}
