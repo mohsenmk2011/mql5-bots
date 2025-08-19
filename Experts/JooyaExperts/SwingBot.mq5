@@ -15,6 +15,7 @@
 #include <Jooya/TrailingManager.mqh>
 #include <Charts/Chart.mqh>
 #include <Jooya/RatesManager.mqh>
+#include <Jooya/Range.mqh>
 //+------------------------< Inputs >--------------------------------+
 static input ulong InpMagicNumber = 3645; //magic number
 input int InpBarCount = 6; //bar count
@@ -73,9 +74,9 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
 {
-   rm.copyRates(false,true,false,false,false,true,true);
-   MqlRates firstDiffrentColorMoveAsCandleHighPeriod = rm.getFirstDiffrentColorMoveAsCandle(InpHighPeriod,0);
-   MqlRates firstDiffrentColorMoveAsCandleLowPeriod = rm.getFirstDiffrentColorMoveAsCandle(InpLowPeriod,0);
+   rm.copyRates(false,true,true,false,false,true,false);
+   Range firstDiffrentColorMoveAsCandleHighPeriod = rm.getFirstDiffrentColorMoveAsCandle(InpHighPeriod,1);
+   Range firstDiffrentColorMoveAsCandleLowPeriod = rm.getFirstDiffrentColorMoveAsCandle(InpLowPeriod,1);
    previousTick = currentTick;
    si.CurrentTick(currentTick);
    int buyCount = pi.buyCount();
@@ -92,28 +93,34 @@ void OnTick()
   // DrawObjectM1();
    DrawObjectM5(firstDiffrentColorMoveAsCandleHighPeriod);
    DrawObjectM1(firstDiffrentColorMoveAsCandleLowPeriod);
-//buy signal
-return;
+   if(firstDiffrentColorMoveAsCandleHighPeriod.up == 0 || firstDiffrentColorMoveAsCandleHighPeriod.down ==0)
+   {   
+      Print("moves is not correct => so return");
+      return;
+   }
+   if(firstDiffrentColorMoveAsCandleLowPeriod.up == 0 || firstDiffrentColorMoveAsCandleLowPeriod.down ==0)
+   {   
+      Print("moves is not correct => so return");
+      return;
+   }
+   //===============================[ signals ]=============================
+   if(!trade.IsOkForTrade())
+   {
+      Print("is not ok for trade so return");
+      return;
+   }
+   //buy signal
    //Print("previousTick.ask => "+DoubleToString(previousTick.ask));
    //Print("currentTick.ask => "+DoubleToString(currentTick.ask));
-   if(buyCount ==0&& openM5!=0 && highM1>closeM5)//previousTick.ask<highM5&&currentTick.ask>=highM5)
+   if(isBuySignla(firstDiffrentColorMoveAsCandleHighPeriod,firstDiffrentColorMoveAsCandleLowPeriod))//previousTick.ask<highM5&&currentTick.ask>=highM5)
    {
+      
       Print("is going to open buy position");
       
-      if(!trade.IsOkForTrade())
-      {
-         Print("is not ok for trade so return");
-         return;
-      }
       Print("calculate stop loss");
-      double sl=closeM5;
+      double sl=firstDiffrentColorMoveAsCandleLowPeriod.down;
       double ask = si.Ask();
-      if(pi.buyCount()>0)
-      {
-         Print("there is a buy postion now,return");
-         return;
-      }
-      if(trade.Buy(pm.newPositionVolume(10),Symbol(),ask,sl))
+      if(trade.Buy(pm.newPositionVolume(100),Symbol(),ask,sl))
       {
          Print("buy position opened successfully");        
          return;
@@ -121,32 +128,21 @@ return;
       Print("buy position was not succeed");
    }
 
-//sell signal
-   if(sellCount ==0&& closeM5!=0 && lowM1<closeM5)//previousTick.bid>lowM5&&currentTick.bid<=lowM5)
+   //sell signal
+   if(isSellSignal(firstDiffrentColorMoveAsCandleHighPeriod,firstDiffrentColorMoveAsCandleLowPeriod))
    {
-      Print("is going to open sell position");
-      
-      if(!trade.IsOkForTrade())
-      {
-         Print("is not ok for trade so return");
-         return;
-      }
+      Print("is going to open sell position");      
       Print("calculate stop loss");
-      double sl=closeM5;
+      double sl=firstDiffrentColorMoveAsCandleLowPeriod.up;
       double bid = si.Bid();
-      if(pi.sellCount()>0)
-      {
-         Print("there is a buy postion now,return");
-         return;
-      }
-      if(trade.Sell(pm.newPositionVolume(10),Symbol(),bid,sl))
+      if(trade.Sell(pm.newPositionVolume(100),Symbol(),bid,sl))
       {
          Print("sell position opened successfully");
          return;
       }
       Print("sell position was not succeed");
    }
-   tm.trailWithLowHigh(lowM1,highM1);
+   tm.trailWithLowHigh(firstDiffrentColorMoveAsCandleHighPeriod.down,firstDiffrentColorMoveAsCandleHighPeriod.up);
    //Print("buyCount => "+IntegerToString(buyCount));
    //Print("sellCount => "+IntegerToString(sellCount)
 
@@ -169,68 +165,78 @@ bool inputsAreValid()
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void DrawObjectM5(MqlRates &candle)
+void DrawObjectM5(Range &range)
 {
    datetime time = iTime(Symbol(),InpHighPeriod,InpBarCount);
 /// draw highM5 line
    ObjectDelete(NULL,"highM5");
-   ObjectCreate(NULL,"highM5",OBJ_TREND,0,time,candle.open,TimeCurrent(),candle.open);
+   ObjectCreate(NULL,"highM5",OBJ_TREND,0,time,range.up,TimeCurrent(),range.up);
    ObjectSetInteger(NULL,"highM5",OBJPROP_WIDTH,3);
    ObjectSetInteger(NULL,"highM5",OBJPROP_COLOR,clrDarkBlue);
 
 
 /// draw lowM5 line
    ObjectDelete(NULL,"lowM5");
-   ObjectCreate(NULL,"lowM5",OBJ_TREND,0,time,candle.close,TimeCurrent(),candle.close);
+   ObjectCreate(NULL,"lowM5",OBJ_TREND,0,time,range.down,TimeCurrent(),range.down);
    ObjectSetInteger(NULL,"lowM5",OBJPROP_WIDTH,3);
-   ObjectSetInteger(NULL,"lowM5",OBJPROP_COLOR,clrDarkBlue);
+   ObjectSetInteger(NULL,"lowM5",OBJPROP_COLOR,clrRed);
 }
 //+------------------------------------------------------------------+
 
 //+------------------------------------------------------------------+
 //|                                                                  |
 //+------------------------------------------------------------------+
-void DrawObjectM1(MqlRates &candle)
+void DrawObjectM1(Range &range)
 {
    datetime time = iTime(Symbol(),InpLowPeriod,InpBarCount);
 /// draw highM1 line
    ObjectDelete(NULL,"highM1");
-   ObjectCreate(NULL,"highM1",OBJ_TREND,0,time,candle.open,TimeCurrent(),candle.open);
+   ObjectCreate(NULL,"highM1",OBJ_TREND,0,time,range.up,TimeCurrent(),range.up);
    ObjectSetInteger(NULL,"highM1",OBJPROP_WIDTH,2);
    ObjectSetInteger(NULL,"highM1",OBJPROP_COLOR,clrDarkGreen);
 
 
 /// draw lowM1 line
    ObjectDelete(NULL,"lowM1");
-   ObjectCreate(NULL,"lowM1",OBJ_TREND,0,time,candle.close,TimeCurrent(),candle.close);
+   ObjectCreate(NULL,"lowM1",OBJ_TREND,0,time,range.down,TimeCurrent(),range.down);
    ObjectSetInteger(NULL,"lowM1",OBJPROP_WIDTH,2);
-   ObjectSetInteger(NULL,"lowM1",OBJPROP_COLOR,clrDarkGreen);
+   ObjectSetInteger(NULL,"lowM1",OBJPROP_COLOR,clrRed);
 }
-//+------------------------------------------------------------------+
-//| Returns index of the first candle with different color           |
-//| from the current candle. Returns -1 if none found.               |
-//+------------------------------------------------------------------+
-int FindFirstDifferentColorCandle(string symbol=NULL, ENUM_TIMEFRAMES tf=PERIOD_CURRENT)
+
+bool isSellSignal(Range &highPeriodRange,Range &lowPeriodRange)
 {
-   if(symbol==NULL) symbol = _Symbol;
-
-   // Get current candle values (index 0 is the current forming candle)
-   double open0  = iOpen(symbol, tf, 0);
-   double close0 = iClose(symbol, tf, 0);
-
-   bool currentBull = (close0 > open0);   // true = bullish, false = bearish
-
-   // Loop over previous candles
-   for(int i=1; i<Bars(symbol, tf); i++)
+   if(pi.sellCount()>0)
    {
-      double open  = iOpen(symbol, tf, i);
-      double close = iClose(symbol, tf, i);
-
-      bool bull = (close > open);
-
-      if(bull != currentBull)  // found different color
-         return i;
+      Print("there is a sell postion now,return");
+      return false;
    }
-
-   return -1; // not found
+   if(!(lowPeriodRange.up<highPeriodRange.down&&lowPeriodRange.down<highPeriodRange.down))
+   {
+      return false;
+   }
+   MqlRates M5Prices[];
+   rm.getPrice(M5Prices,PERIOD_M5);
+   
+   if(!(M5Prices[1].close<lowPeriodRange.down))
+   {
+      return false;   
+   }
+   return true;
+}
+bool isBuySignla(Range &highPeriodRange,Range &lowPeriodRange)
+{
+   if(pi.buyCount()>0)
+   {
+      Print("there is a buy postion now,return");
+      return false;
+   }
+   if(!(lowPeriodRange.up>highPeriodRange.up&&lowPeriodRange.down>highPeriodRange.up))
+   {
+      return false;
+   }
+   if(!(si.Ask()>lowPeriodRange.up))
+   {
+      return false;   
+   }
+   return true;
 }
