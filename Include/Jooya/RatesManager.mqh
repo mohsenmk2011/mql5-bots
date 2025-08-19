@@ -6,6 +6,7 @@
 
 #include <Jooya/JooyaRates.mqh>
 #include <Jooya/PositionInfo.mqh>
+#include <Jooya/Range.mqh>
 
 #property copyright "Copyright 2022, Jooya"
 #property link      "https://www.mql5.com"
@@ -36,7 +37,7 @@ public:
    double             getHigherLow(ENUM_TIMEFRAMES period);
    double             getLowerHigh(ENUM_TIMEFRAMES period);
    int             getFirstDiffrentColorCandleIndex(ENUM_TIMEFRAMES period,int index =0);
-   MqlRates             getFirstDiffrentColorMoveAsCandle(ENUM_TIMEFRAMES period,int startIndex);
+   Range             getFirstDiffrentColorMoveAsCandle(ENUM_TIMEFRAMES period,int startIndex);
 
    datetime getCurrentCandleTime(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
    bool currentCandleHasAnyPosition(ENUM_TIMEFRAMES period=PERIOD_CURRENT,string symbol ="current symbol");
@@ -111,9 +112,9 @@ void RatesManager::copyRates(bool m1,bool m5,bool m15,bool m30,bool h1,bool h4,b
 //+------------------------------------------------------------------+
 //| will retruns first moves with diffrent color as mqlrate structure
 //+------------------------------------------------------------------+
-MqlRates RatesManager::getFirstDiffrentColorMoveAsCandle(ENUM_TIMEFRAMES period,int startIndex)
+Range RatesManager::getFirstDiffrentColorMoveAsCandle(ENUM_TIMEFRAMES period,int startIndex)
 {
-   MqlRates result;
+   Range result;
    
    int firstDiffrentColorCanldeIndex = getFirstDiffrentColorCandleIndex(period,startIndex);
    if(firstDiffrentColorCanldeIndex == -1)
@@ -131,11 +132,28 @@ MqlRates RatesManager::getFirstDiffrentColorMoveAsCandle(ENUM_TIMEFRAMES period,
    bool isCurrentCandleGreen = jr.IsUpCandle(candles[startIndex]);
    if(firstDiffrentColorCanldeIndex == secondDiffrentColorCanldeIndex)
    {
-      return candles[firstDiffrentColorCanldeIndex];
+      if(jr.IsUpCandle(candles[firstDiffrentColorCanldeIndex]))
+      {
+         result.up = candles[firstDiffrentColorCanldeIndex].close;
+         result.down = candles[firstDiffrentColorCanldeIndex].open;
+      }
+      else
+      {
+         result.up = candles[firstDiffrentColorCanldeIndex].open;
+         result.down = candles[firstDiffrentColorCanldeIndex].close;
+      }
+      return result;
    }
-   result.open = candles[secondDiffrentColorCanldeIndex].open;
-   result.close = candles[firstDiffrentColorCanldeIndex].close;
-   
+   if(isCurrentCandleGreen)
+   {
+      result.up = candles[secondDiffrentColorCanldeIndex].open;
+      result.down = candles[firstDiffrentColorCanldeIndex].close;
+   }
+   else
+   {
+      result.up = candles[firstDiffrentColorCanldeIndex].close;
+      result.down = candles[secondDiffrentColorCanldeIndex].open;   
+   }   
    return result;
 }
 //+------------------------------------------------------------------+
